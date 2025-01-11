@@ -1,0 +1,17 @@
+    # Frontend Dockerfile
+    FROM node:16
+
+    WORKDIR /app
+
+    # Copier les dépendances et installer
+    COPY ./package*.json ./
+    RUN npm install
+
+    # Copier le code source
+    COPY . .
+
+    # Exposer le port du frontend (React)
+    EXPOSE 3000
+
+    # Démarrer l'application React
+    CMD ["npm", "start"]

@@ -1,0 +1,72 @@
+    services:
+      react-app:
+        container_name: react-audiowhiz
+        build:
+          context: .
+          dockerfile: Dockerfile.frontend
+        ports:
+          - "3000:3000"
+        volumes:
+          - .:/app
+          - /app/node_modules
+        depends_on:
+          - node-server
+        stdin_open: true
+        tty: true
+        networks:
+          - app-network
+
+      node-server:
+        container_name: node-audiowhiz
+        build:
+          context: . 
+          dockerfile: ./server/Dockerfile.backend
+        ports:
+          - "4000:4000"
+        depends_on:
+          - mariadb
+        environment:
+          - NODE_ENV=development
+          - JWT_SECRET_KEY=XJ8q7vG$%u9bT!P&c4zM@Ld*W^sNr5eK
+        networks:
+          - app-network
+
+      mariadb:
+        image: mariadb:10.9
+        container_name: mariadb-audiowhiz
+        restart: always
+        environment:
+          MARIADB_ROOT_PASSWORD: root
+          MARIADB_DATABASE: cocagneBDD
+          MARIADB_USER: ask
+          MARIADB_PASSWORD: ask
+        ports:
+          - "3308:3306"
+        volumes:
+          - mariadb_data:/var/lib/mysql
+          - ./sql-scripts:/docker-entrypoint-initdb.d
+
+        networks:
+          - app-network
+
+      phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin-audiowhiz
+        restart: always
+        environment:
+          PMA_HOST: mariadb
+          PMA_PORT: 3306
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - "9000:80"
+        depends_on:
+          - mariadb
+        networks:
+          - app-network
+
+    networks:
+      app-network:
+        driver: bridge
+
+    volumes:
+      mariadb_data:
