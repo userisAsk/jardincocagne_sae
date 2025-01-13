@@ -24,8 +24,8 @@ function Hero() {
           </p>
           <div className="mt-4">
             <a 
-              href="transcribe.html" 
-              className="bg-white hover:bg-[#68956b] text-white font-bold py-4 px-8 rounded-full text-lg shadow-lg transition duration-300 inline-block"
+              href="#" 
+              className="bg-white hover:bg-[#68956b] text-[#68956b] hover:text-white font-bold py-4 px-8 rounded-full text-lg shadow-lg transition duration-300 inline-block"
             >
               Commencer
             </a>

@@ -3,10 +3,10 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mariadb:3306
--- Généré le : jeu. 09 jan. 2025 à 17:06
+-- Généré le : sam. 11 jan. 2025 à 08:33
 -- Version du serveur : 10.9.8-MariaDB-1:10.9.8+maria~ubu2204
 -- Version de PHP : 8.2.8
-USE cocagneBDD;
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
@@ -127,6 +127,8 @@ CREATE TABLE `Point_Depot` (
   `ID_Point_Depot` int(11) NOT NULL,
   `Nom` varchar(100) NOT NULL,
   `Adresse` text NOT NULL,
+  `Latitude` decimal(10,8) NOT NULL,
+  `Longitude` decimal(11,8) NOT NULL,
   `Responsable` varchar(100) DEFAULT NULL,
   `Horaires_Ouverture` text DEFAULT NULL,
   `Commentaires` text DEFAULT NULL
@@ -136,9 +138,11 @@ CREATE TABLE `Point_Depot` (
 -- Déchargement des données de la table `Point_Depot`
 --
 
-INSERT INTO `Point_Depot` (`ID_Point_Depot`, `Nom`, `Adresse`, `Responsable`, `Horaires_Ouverture`, `Commentaires`) VALUES
-(1, 'Point A', '12 rue des Dépôts, Paris', 'M. Dupont', '8h-18h', 'Aucun commentaire'),
-(2, 'Point B', '45 avenue de la Logistique, Lyon', 'Mme Martin', '9h-17h', 'Réception limitée le samedi');
+INSERT INTO `Point_Depot` (`ID_Point_Depot`, `Nom`, `Adresse`, `Latitude`, `Longitude`, `Responsable`, `Horaires_Ouverture`, `Commentaires`) VALUES
+(1, 'Point A', '12 rue des Dépôts, Paris', 48.85660000, 2.35220000, 'M. Dupont', '8h-18h', 'Aucun commentaire'),
+(2, 'Point B', '45 avenue de la Logistique, Lyon', 45.76400000, 4.83570000, 'Mme Martin', '9h-17h', 'Réception limitée le samedi'),
+(8, 'Dépôt C', '20 boulevard Saint-Michel, Marseille', 43.29650000, 5.36980000, 'M. Durand', '7h-15h', 'Pas de stockage possible'),
+(9, 'Dépôt D', '5 rue du Commerce, Lille', 50.62920000, 3.05730000, 'Mme Bernard', '10h-19h', 'Ouvert le samedi');
 
 -- --------------------------------------------------------
 
@@ -184,7 +188,9 @@ CREATE TABLE `Tournee` (
 
 INSERT INTO `Tournee` (`ID_Tournee`, `Jour_Preparation`, `Jour_Livraison`, `Etat_Tournee`, `Parcours`) VALUES
 (1, '2024-12-20', '2024-12-21', 'en cours', 'Parcours A'),
-(2, '2024-12-18', '2024-12-19', 'terminée', 'Parcours B');
+(2, '2024-12-18', '2024-12-19', 'terminée', 'Parcours B'),
+(3, '2025-01-10', '2025-01-11', 'en cours', 'Parcours Alpha'),
+(4, '2025-01-12', '2025-01-13', 'terminée', 'Parcours Beta');
 
 -- --------------------------------------------------------
 
@@ -197,6 +203,14 @@ CREATE TABLE `Tournee_Points` (
   `ID_Point_Depot` int(11) NOT NULL,
   `Ordre` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `Tournee_Points`
+--
+
+INSERT INTO `Tournee_Points` (`ID_Tournee`, `ID_Point_Depot`, `Ordre`) VALUES
+(4, 1, 1),
+(4, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -337,7 +351,7 @@ ALTER TABLE `Document`
 -- AUTO_INCREMENT pour la table `Point_Depot`
 --
 ALTER TABLE `Point_Depot`
-  MODIFY `ID_Point_Depot` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID_Point_Depot` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT pour la table `Produit`
@@ -349,7 +363,7 @@ ALTER TABLE `Produit`
 -- AUTO_INCREMENT pour la table `Tournee`
 --
 ALTER TABLE `Tournee`
-  MODIFY `ID_Tournee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `ID_Tournee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT pour la table `users`
@@ -387,7 +401,9 @@ ALTER TABLE `Document`
 --
 ALTER TABLE `Tournee_Points`
   ADD CONSTRAINT `Tournee_Points_ibfk_1` FOREIGN KEY (`ID_Tournee`) REFERENCES `Tournee` (`ID_Tournee`) ON DELETE CASCADE,
-  ADD CONSTRAINT `Tournee_Points_ibfk_2` FOREIGN KEY (`ID_Point_Depot`) REFERENCES `Point_Depot` (`ID_Point_Depot`) ON DELETE CASCADE;
+  ADD CONSTRAINT `Tournee_Points_ibfk_2` FOREIGN KEY (`ID_Point_Depot`) REFERENCES `Point_Depot` (`ID_Point_Depot`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_point_depot` FOREIGN KEY (`ID_Point_Depot`) REFERENCES `Point_Depot` (`ID_Point_Depot`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_tournee` FOREIGN KEY (`ID_Tournee`) REFERENCES `Tournee` (`ID_Tournee`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

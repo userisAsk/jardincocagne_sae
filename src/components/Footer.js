@@ -1,39 +1,22 @@
-import React from 'react';
-
-function Footer() {
+const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white py-4 text-center">
-      <div className="container mx-auto">
-        <p>&copy; {new Date().getFullYear()} VotreSite. Tous droits réservés.</p>
-        <div className="mt-2">
-          <a
-            href="https://www.facebook.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mx-2 hover:underline"
-          >
+    <footer className="w-full bg-gray-800 text-white py-4">
+      <div className="container mx-auto flex flex-col md:flex-row justify-between items-center px-4">
+        <p className="text-sm">&copy; 2025 VotreSite. Tous droits réservés.</p>
+        <div className="flex space-x-4 mt-2 md:mt-0">
+          <a href="#" className="hover:underline">
             Facebook
           </a>
-          <a
-            href="https://www.twitter.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mx-2 hover:underline"
-          >
+          <a href="#" className="hover:underline">
             Twitter
           </a>
-          <a
-            href="https://www.linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mx-2 hover:underline"
-          >
+          <a href="#" className="hover:underline">
             LinkedIn
           </a>
         </div>
       </div>
     </footer>
   );
-}
+};
 
 export default Footer;

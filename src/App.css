@@ -36,3 +36,25 @@
     transform: rotate(360deg);
   }
 }
+
+
+/* Structure globale pour gérer le footer */
+body, html, #root {
+  height: 100%; /* Prend toute la hauteur disponible */
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1; /* Permet au contenu de remplir l'espace restant entre le header et le footer */
+}
+
+footer {
+  background-color: #1f2937; /* Couleur de fond du footer */
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  position: relative; /* Permet de rester en bas sans couvrir le contenu */
+  width: 100%;
+}
