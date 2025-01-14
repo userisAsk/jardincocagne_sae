@@ -8,13 +8,11 @@ function Profile() {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
- 
-
+  
   useEffect(() => {
     const fetchProfileData = async () => {
       if (!user?.id) return;
-
+      
       try {
         const response = await fetch(`http://localhost:4000/adherents/${user.id}`, {
           credentials: 'include',
@@ -22,11 +20,11 @@ function Profile() {
             'Content-Type': 'application/json'
           }
         });
-
+        
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des données.");
         }
-
+        
         const data = await response.json();
         setProfileData(data);
         setLoading(false);
@@ -36,7 +34,7 @@ function Profile() {
         setLoading(false);
       }
     };
-
+    
     if (isAuthenticated) {
       fetchProfileData();
     }
@@ -83,6 +81,35 @@ function Profile() {
                   <label className="text-sm font-medium text-gray-500">Nom</label>
                   <p className="text-gray-900">{profileData.name}</p>
                 </div>
+                <div className="space-y-1">
+                  <label className="text-sm font-medium text-gray-500">Téléphone</label>
+                  <p className="text-gray-900">
+                    {profileData.Telephone || "Non renseigné"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Section pour l'adresse */}
+              <div className="mt-6">
+                <h2 className="text-lg font-semibold mb-4">Adresse</h2>
+                {profileData.Rue ? (
+                  <div className="grid grid-cols-1 gap-2">
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-500">Rue</label>
+                      <p className="text-gray-900">{profileData.Rue}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-500">Code Postal</label>
+                      <p className="text-gray-900">{profileData.Code_Postal}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-gray-500">Ville</label>
+                      <p className="text-gray-900">{profileData.Ville}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic">Aucune adresse renseignée</p>
+                )}
               </div>
 
               <button

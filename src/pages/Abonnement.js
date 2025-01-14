@@ -7,6 +7,7 @@ const Abonnement = () => {
   const [formula, setFormula] = useState("");
   const [eggsFrequency, setEggsFrequency] = useState("");
   const [eggsFormula, setEggsFormula] = useState("");
+  const [fruitFrequency, setFruitFrequency] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -17,7 +18,8 @@ const Abonnement = () => {
       - Fréquence légumes : ${frequency}
       - Formule légumes : ${formula}
       - Fréquence œufs : ${eggsFrequency}
-      - Formule œufs : ${eggsFormula}`
+      - Formule œufs : ${eggsFormula}
+      - Fréquence fruit : ${fruitFrequency}`
     );
   };
 
@@ -100,54 +102,79 @@ const Abonnement = () => {
             Choisissez la fréquence
           </h3>
           <div className="grid grid-cols-2 gap-4 mt-2">
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
-              <input
-                type="radio"
-                name="frequency"
-                value="Hebdomadaire"
-                onChange={(e) => setFrequency(e.target.value)}
-                className="hidden"
-              />
-              <span className="text-green-700 font-medium">Hebdomadaire</span>
-            </label>
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
-              <input
-                type="radio"
-                name="frequency"
-                value="Bimensuelle"
-                onChange={(e) => setFrequency(e.target.value)}
-                className="hidden"
-              />
-              <span className="text-green-700 font-medium">Bimensuelle</span>
-            </label>
-          </div>
+              <label
+                className={`flex items-center justify-center border ${
+                  frequency === "Hebdomadaire"
+                    ? "bg-green-200 border-green-600"
+                    : "border-green-600"
+                } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+              >
+                <input
+                  type="radio"
+                  name="frequency"
+                  value="Hebdomadaire"
+                  onChange={(e) => setFrequency(e.target.value)}
+                  className="hidden"
+                />
+                <span className="text-green-700 font-medium">Hebdomadaire</span>
+              </label>
+              <label
+                className={`flex items-center justify-center border ${
+                  frequency === "Bimensuelle"
+                    ? "bg-green-200 border-green-600"
+                    : "border-green-600"
+                } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+              >
+                <input
+                  type="radio"
+                  name="frequency"
+                  value="Bimensuelle"
+                  onChange={(e) => setFrequency(e.target.value)}
+                  className="hidden"
+                />
+                <span className="text-green-700 font-medium">Bimensuelle</span>
+              </label>
+            </div>
+
 
           {/* Formule légumes */}
           <h3 className="font-semibold text-green-700 mt-4">
             Choisissez la formule
           </h3>
           <div className="grid grid-cols-2 gap-4 mt-2">
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
-              <input
-                type="radio"
-                name="formula"
-                value="Panier simple"
-                onChange={(e) => setFormula(e.target.value)}
-                className="hidden"
-              />
-              <span className="text-green-700 font-medium">Panier simple</span>
-            </label>
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
-              <input
-                type="radio"
-                name="formula"
-                value="Panier familial"
-                onChange={(e) => setFormula(e.target.value)}
-                className="hidden"
-              />
-              <span className="text-green-700 font-medium">Panier familial</span>
-            </label>
-          </div>
+              <label
+                className={`flex items-center justify-center border ${
+                  formula === "Panier simple"
+                    ? "bg-green-200 border-green-600"
+                    : "border-green-600"
+                } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+              >
+                <input
+                  type="radio"
+                  name="formula"
+                  value="Panier simple"
+                  onChange={(e) => setFormula(e.target.value)}
+                  className="hidden"
+                />
+                <span className="text-green-700 font-medium">Panier simple</span>
+              </label>
+              <label
+                className={`flex items-center justify-center border ${
+                  formula === "Panier familial"
+                    ? "bg-green-200 border-green-600"
+                    : "border-green-600"
+                } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+              >
+                <input
+                  type="radio"
+                  name="formula"
+                  value="Panier familial"
+                  onChange={(e) => setFormula(e.target.value)}
+                  className="hidden"
+                />
+                <span className="text-green-700 font-medium">Panier familial</span>
+              </label>
+            </div>
         </div>
 
         {/* Boîtes d'œufs */}
@@ -183,7 +210,13 @@ const Abonnement = () => {
             Choisissez la fréquence
           </h3>
           <div className="grid grid-cols-2 gap-4 mt-2">
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
+            <label
+              className={`flex items-center justify-center border ${
+                eggsFrequency === "Hebdomadaire"
+                  ? "bg-green-200 border-green-600"
+                  : "border-green-600"
+              } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+            >
               <input
                 type="radio"
                 name="eggsFrequency"
@@ -193,7 +226,13 @@ const Abonnement = () => {
               />
               <span className="text-green-700 font-medium">Hebdomadaire</span>
             </label>
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
+            <label
+              className={`flex items-center justify-center border ${
+                eggsFrequency === "Bimensuelle"
+                  ? "bg-green-200 border-green-600"
+                  : "border-green-600"
+              } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+            >
               <input
                 type="radio"
                 name="eggsFrequency"
@@ -205,12 +244,20 @@ const Abonnement = () => {
             </label>
           </div>
 
+
+
           {/* Formule œufs */}
           <h3 className="font-semibold text-green-700 mt-4">
             Choisissez la formule
           </h3>
           <div className="grid grid-cols-3 gap-4 mt-2">
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
+            <label
+              className={`flex items-center justify-center border ${
+                eggsFormula === "1 boîte de 6 œufs"
+                  ? "bg-green-200 border-green-600"
+                  : "border-green-600"
+              } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+            >
               <input
                 type="radio"
                 name="eggsFormula"
@@ -222,7 +269,13 @@ const Abonnement = () => {
                 1 boîte de 6 œufs
               </span>
             </label>
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
+            <label
+              className={`flex items-center justify-center border ${
+                eggsFormula === "2 boîtes de 6 œufs"
+                  ? "bg-green-200 border-green-600"
+                  : "border-green-600"
+              } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+            >
               <input
                 type="radio"
                 name="eggsFormula"
@@ -234,7 +287,13 @@ const Abonnement = () => {
                 2 boîtes de 6 œufs
               </span>
             </label>
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
+            <label
+              className={`flex items-center justify-center border ${
+                eggsFormula === "3 boîtes de 6 œufs"
+                  ? "bg-green-200 border-green-600"
+                  : "border-green-600"
+              } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+            >
               <input
                 type="radio"
                 name="eggsFormula"
@@ -247,76 +306,76 @@ const Abonnement = () => {
               </span>
             </label>
           </div>
+
         </div>
-        <div className="mb-6">
-          <h2 className="font-semibold text-green-700 mb-4">
-            • Je souhaite recevoir des paniers de fruits
-          </h2>
-          <div className="flex items-center space-x-6">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="eggsFrequency"
-                value="Oui"
-                onChange={(e) => setEggsFrequency(e.target.value)}
-                className="mr-2"
-              />
-              Oui
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                name="eggsFrequency"
-                value="Non"
-                onChange={(e) => setEggsFrequency(e.target.value)}
-                className="mr-2"
-              />
-              Non
-            </label>
-          </div>
-          {/* Formule œufs */}
-          <h3 className="font-semibold text-green-700 mt-4">
-            Choisissez la fréquence
-          </h3>
-          <div className="grid grid-cols-3 gap-4 mt-2">
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
-              <input
-                type="radio"
-                name="eggsFormula"
-                value="1 boîte de 6 œufs"
-                onChange={(e) => setEggsFormula(e.target.value)}
-                className="hidden"
-              />
-              <span className="text-green-700 font-medium">
-                Hebdomadaire
-              </span>
-            </label>
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
-              <input
-                type="radio"
-                name="eggsFormula"
-                value="2 boîtes de 6 œufs"
-                onChange={(e) => setEggsFormula(e.target.value)}
-                className="hidden"
-              />
-              <span className="text-green-700 font-medium">
-                Bimensuelle
-              </span>
-            </label>
-            <label className="flex items-center justify-center border border-green-600 rounded-md p-3 cursor-pointer hover:bg-green-100">
-              <input
-                type="radio"
-                name="eggsFormula"
-                value="3 boîtes de 6 œufs"
-                onChange={(e) => setEggsFormula(e.target.value)}
-                className="hidden"
-              />
-              <span className="text-green-700 font-medium">
-                A la carte*
-              </span>
-            </label>
-          </div>
-        </div>
+        {/* Paniers de fruits */}
+<div className="mb-6">
+  <h2 className="font-semibold text-green-700 mb-4">
+    • Je souhaite recevoir des paniers de fruits
+  </h2>
+  <div className="flex items-center space-x-6">
+    <label className="flex items-center">
+      <input
+        type="radio"
+        name="fruitFrequency"
+        value="Oui"
+        onChange={(e) => setFruitFrequency(e.target.value)}
+        className="mr-2"
+      />
+      Oui
+    </label>
+    <label className="flex items-center">
+      <input
+        type="radio"
+        name="fruitFrequency"
+        value="Non"
+        onChange={(e) => setFruitFrequency(e.target.value)}
+        className="mr-2"
+      />
+      Non
+    </label>
+  </div>
+
+  {/* Fréquence des paniers de fruits */}
+  <h3 className="font-semibold text-green-700 mt-4">
+    Choisissez la fréquence
+  </h3>
+  <div className="grid grid-cols-2 gap-4 mt-2">
+    <label
+      className={`flex items-center justify-center border ${
+        fruitFrequency === "Hebdomadaire"
+          ? "bg-green-200 border-green-600"
+          : "border-green-600"
+      } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+    >
+      <input
+        type="radio"
+        name="fruitFrequency"
+        value="Hebdomadaire"
+        onChange={(e) => setFruitFrequency(e.target.value)}
+        className="hidden"
+      />
+      <span className="text-green-700 font-medium">Hebdomadaire</span>
+    </label>
+    <label
+      className={`flex items-center justify-center border ${
+        fruitFrequency === "Bimensuelle"
+          ? "bg-green-200 border-green-600"
+          : "border-green-600"
+      } rounded-md p-3 cursor-pointer hover:bg-green-100`}
+    >
+      <input
+        type="radio"
+        name="fruitFrequency"
+        value="Bimensuelle"
+        onChange={(e) => setFruitFrequency(e.target.value)}
+        className="hidden"
+      />
+      <span className="text-green-700 font-medium">Bimensuelle</span>
+    </label>
+  </div>
+</div>
+
 
         <button
           type="submit"

@@ -123,7 +123,11 @@ app.get('/adherents/:id', async (req, res) => {
   try {
     const conn = await pool.getConnection();
     const adherent = await conn.query(
-      'SELECT Id_adherent, email, name FROM Adherent WHERE Id_adherent = ?',
+      `SELECT a.Id_adherent, a.email, a.name, a.Telephone,
+              adr.Rue, adr.Code_Postal, adr.Ville 
+       FROM Adherent a 
+       LEFT JOIN Adresse adr ON a.Id_adherent = adr.ID_Adherent 
+       WHERE a.Id_adherent = ?`,
       [id]
     );
     conn.release();
