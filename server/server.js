@@ -34,8 +34,9 @@ app.use(
   cors({
     origin: 'http://localhost:3000', 
     credentials: true, 
-    methods: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Autoriser les méthodes nécessaires
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['set-cookie']
   })
 );
 // Middleware pour parser les requêtes JSON
@@ -115,6 +116,30 @@ app.get('/database', async (req, res) => {
 });
 
 
+
+
+app.get('/adherents/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const conn = await pool.getConnection();
+    const adherent = await conn.query(
+      'SELECT Id_adherent, email, name FROM Adherent WHERE Id_adherent = ?',
+      [id]
+    );
+    conn.release();
+
+    if (adherent.length === 0) {
+      return res.status(404).json({ error: 'Adhérent non trouvé.' });
+    }
+
+    res.status(200).json(adherent[0]);
+  } catch (error) {
+    console.error('Erreur lors de la récupération de l\'adhérent :', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération de l\'adhérent.' });
+  }
+});
+
+
 //CONNEXION MODE
 
 // register 
@@ -154,16 +179,15 @@ app.post('/register', async (req, res) => {
     return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères.' });
   }
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const result = await pool.query('SELECT * FROM Adherent WHERE email = ?', [email]);
     if (result && result.length > 0) {
       return res.status(400).json({ error: 'Cet email est déjà utilisé.' });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
-    await pool.query('INSERT INTO users (email, password, name, auth_method) VALUES (?, ?, ?, ?)', [
+    await pool.query('INSERT INTO Adherent (email, password, name) VALUES (?, ?, ?)', [
       email,
       hashedPassword,
       name,
-      'manual',
     ]);
     res.status(201).json({ message: 'Inscription réussie !' });
   } catch (error) {
@@ -201,37 +225,34 @@ app.post('/register', async (req, res) => {
  *         description: Erreur serveur.
  */
 app.post('/login', async (req, res) => {
-  const { email, password, rememberMe } = req.body;
+  const { email, password } = req.body;
+
   if (!email || !password) {
     return res.status(400).json({ error: 'Tous les champs sont obligatoires.' });
   }
+
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = ? AND auth_method = ?', [email, 'manual']);
+    const result = await pool.query('SELECT * FROM Adherent WHERE email = ?', [email]);
+
     if (!result || result.length === 0) {
-      return res.status(400).json({ error: 'Utilisateur non trouvé ou méthode d\'authentification incorrecte.' });
+      return res.status(400).json({ error: 'Utilisateur non trouvé.' });
     }
+
     const user = result[0];
     const isPasswordValid = await bcrypt.compare(password, user.password);
+
     if (!isPasswordValid) {
       return res.status(400).json({ error: 'Mot de passe incorrect.' });
     }
-    const token = jwt.sign(
-      { userId: user.id, isAdmin: user.admin === 1 },
-      process.env.JWT_SECRET_KEY,
-      { expiresIn: rememberMe ? '30d' : '1d' }
-    );
-    res.cookie('auth_token', token, {
-      maxAge: rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000,
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-    });
-    res.json({ message: 'Connexion réussie !', user: { id: user.id, admin: user.admin } });
+
+    // Retourner les informations essentielles de l'utilisateur
+    res.json({ user: { id: user.Id_adherent, email: user.email, name: user.name } });
   } catch (error) {
     console.error('Erreur lors de la connexion :', error);
     res.status(500).json({ error: 'Erreur serveur.' });
   }
 });
+
 
 
 
