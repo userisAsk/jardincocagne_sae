@@ -21,6 +21,7 @@ const DeliveryManagement = () => {
   const [itineraire, setItineraire] = useState([]);
   const [allDepots, setAllDepots] = useState([]);
   const [selectedDepot, setSelectedDepot] = useState(null);
+  const [selectedPoint, setSelectedPoint] = useState(null);
   const [currentColor, setCurrentColor] = useState("blue");
   const [mapKey, setMapKey] = useState(0); // Utilisé pour forcer le rechargement de la carte
 
@@ -102,6 +103,29 @@ const DeliveryManagement = () => {
       .catch((err) => console.error("Erreur lors de l'ajout du point:", err));
   };
 
+  const handleDeletePoint = () => {
+    if (!selectedPoint) {
+      alert("Veuillez sélectionner un point à supprimer.");
+      return;
+    }
+
+    fetch(`http://localhost:4000/tours/${selectedTourId}/points/${selectedPoint}`, {
+      method: "DELETE",
+    })
+      .then(() => fetch(`http://localhost:4000/tours/${selectedTourId}`))
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.points) {
+          setPoints(data.points);
+          setItineraire(data.points.map((point) => [point.Latitude, point.Longitude]));
+          alert("Point supprimé avec succès !");
+        } else {
+          alert("Aucun point trouvé après la suppression.");
+        }
+      })
+      .catch((err) => console.error("Erreur lors de la suppression du point:", err));
+  };
+
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex-grow container mx-auto p-4">
@@ -172,7 +196,6 @@ const DeliveryManagement = () => {
                       }</div>`,
                     })}
                   >
-                    {/* Tooltip affichant les infos au survol uniquement */}
                     <Tooltip direction="top" offset={[0, -20]}>
                       <span>
                         {point.Nom} <br /> {point.Adresse}
@@ -189,8 +212,7 @@ const DeliveryManagement = () => {
               </MapContainer>
             </div>
 
-            <div className="flex flex-col items-center">
-              <h3 className="text-lg font-medium mb-2">Ajouter un point à la tournée</h3>
+            <div className="flex flex-col items-center gap-4">
               <div className="flex items-center gap-4">
                 <select
                   onChange={(e) => setSelectedDepot(e.target.value)}
@@ -208,6 +230,26 @@ const DeliveryManagement = () => {
                   className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                 >
                   Ajouter
+                </button>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <select
+                  onChange={(e) => setSelectedPoint(e.target.value)}
+                  className="p-2 border border-gray-300 rounded-md"
+                >
+                  <option value="">Sélectionnez un point</option>
+                  {points.map((point) => (
+                    <option key={point.ID_Point} value={point.ID_Point}>
+                      {point.Nom} - {point.Adresse}
+                    </option>
+                  ))}
+                </select>
+                <button
+                  onClick={handleDeletePoint}
+                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
+                >
+                  Supprimer le point sélectionné
                 </button>
               </div>
             </div>

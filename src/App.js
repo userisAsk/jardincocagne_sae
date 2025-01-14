@@ -10,6 +10,9 @@ import Login from './connexion_pages/Login';
 import Register from './connexion_pages/Register';
 import DeliveryManagement from './DeliveryManagement';
 import Footer from './components/Footer';
+import Abonnement from './pages/Abonnement';
+import Profile from './pages/Profile';
+
 
 const App = () => {
   const location = useLocation();
@@ -18,6 +21,9 @@ const App = () => {
   const isHeaderVisible = !excludeHeaderRoutes.includes(location.pathname);
   const isFooterVisible = !excludeFooterRoutes.includes(location.pathname);
 
+
+
+  
   return (
     <AuthProvider>
       <div> 
@@ -27,7 +33,9 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/mapcomponent" element={<MapComponent />} />
+          <Route path="/abonnement" element={<Abonnement />} />
           <Route path="/delivery" element={<DeliveryManagement />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
         {isFooterVisible && <Footer  />}
       </div>

@@ -8,44 +8,51 @@ export function AuthProvider({ children }) {
  const [user, setUser] = useState(null);
 
 
+ 
 
- const login = async (email, password, rememberMe) => {
-   try {
-     const response = await fetch('http://localhost:4000/login', {
-       method: 'POST',
-       credentials: 'include',
-       headers: { 'Content-Type': 'application/json' },
-       body: JSON.stringify({ email, password, rememberMe })
-     });
 
-     const data = await response.json();
+useEffect(() => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user) {
+    setUser(user);
+    setIsAuthenticated(true);
+  }
+}, []);
 
-     if (response.ok) {
-       setUser(data.user);
-       setIsAuthenticated(true);
-       return { success: true };
-     } else {
-       return { success: false, error: data.error };
-     }
-   } catch (error) {
-     console.error('Login error:', error);
-     return { success: false, error: 'Erreur de connexion' };
-   }
- };
 
- const logout = async () => {
-   try {
-     await fetch('http://localhost:4000/logout', {
-       method: 'GET',
-       credentials: 'include'
-     });
-     setIsAuthenticated(false);
-     setUser(null);
-     window.location.href = '/';
-   } catch (error) {
-     console.error('Logout error:', error);
-   }
- };
+// AuthContext.js
+const login = async (email, password) => {
+  try {
+    const response = await fetch('http://localhost:4000/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Mettre à jour l'état immédiatement
+      setUser(data.user);
+      setIsAuthenticated(true);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      return { success: true };
+    } else {
+      return { success: false, error: data.error };
+    }
+  } catch (error) {
+    console.error('Erreur lors de la connexion :', error);
+    return { success: false, error: 'Erreur de connexion' };
+  }
+};
+
+
+ const logout = () => {
+  localStorage.removeItem("user");
+  setIsAuthenticated(false);
+  setUser(null);
+};
+
 
  return (
    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>

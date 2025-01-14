@@ -19,43 +19,21 @@ function Login() {
 
   const handleManualLogin = async (e) => {
     e.preventDefault();
-    const result = await login(formData.email, formData.password, rememberMe);
-    if (result.success) {
-      navigate("/");
-    } else {
-      alert(result.error);
-    }
     try {
-      const response = await fetch("http://localhost:4000/login", {
-        method: "POST",
-        credentials: 'include',
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...formData, rememberMe }), // Ajouter 'rememberMe' dans la requête
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok) {
-        console.log("Utilisateur connecté :", data.user);
-        console.log(JSON.stringify({ ...formData, rememberMe }));
-
-        // Déterminer la durée du cookie en fonction de "Se souvenir de moi"
-        const maxAge = rememberMe ? 60 * 60 * 24 * 30 : 60 * 60; // 30 jours ou 1 heure
-        document.cookie = `auth_token=${data.token}; path=/; max-age=${maxAge}`;
-  
-        // Appel à la fonction 'login' du contexte pour mémoriser l'authentification
-        login(data.token);
-  
-        // Redirige vers la page d'accueil après la connexion
+      // Utiliser la fonction login du contexte
+      const result = await login(formData.email, formData.password);
+      
+      if (result.success) {
         navigate("/");
       } else {
-        alert(`Erreur : ${data.error}`);
+        alert(`Erreur : ${result.error}`);
       }
     } catch (error) {
-      console.error("Erreur lors de la connexion manuelle :", error);
+      console.error("Erreur lors de la connexion :", error);
       alert("Une erreur est survenue. Veuillez réessayer.");
     }
   };
+  
   
 
  
