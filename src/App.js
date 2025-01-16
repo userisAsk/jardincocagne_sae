@@ -12,6 +12,7 @@ import DeliveryManagement from './DeliveryManagement';
 import Footer from './components/Footer';
 import Abonnement from './pages/Abonnement';
 import Profile from './pages/Profile';
+import Calendrier from './pages/Calendrier';
 
 
 const App = () => {
@@ -36,6 +37,8 @@ const App = () => {
           <Route path="/abonnement" element={<Abonnement />} />
           <Route path="/delivery" element={<DeliveryManagement />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/calendrier" element={<Calendrier />} />
+
         </Routes>
         {isFooterVisible && <Footer  />}
       </div>

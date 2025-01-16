@@ -2,7 +2,6 @@
   const express = require('express'); 
   const cors = require('cors'); 
   const app = express(); 
-  const jwt = require('jsonwebtoken');
   const session = require('express-session');
   const bcrypt = require('bcryptjs');
   const mariadb = require('mariadb');
@@ -630,6 +629,115 @@
       res.status(500).json({ error: 'Erreur lors de la suppression de la tournée.' });
     }
   });
+
+
+  app.post('/tours/:id/schedule', async (req, res) => {
+    const { frequency, startDate, endDate, holidays } = req.body;
+    const { id } = req.params;
+    
+    try {
+        const conn = await pool.getConnection();
+        let currentDate = new Date(startDate);
+        const schedule = [];
+
+        // Générer les dates en fonction de la fréquence
+        while (currentDate <= new Date(endDate)) {
+            const isHoliday = holidays.includes(currentDate.toISOString().split('T')[0]);
+            schedule.push([id, currentDate, frequency, isHoliday, isHoliday ? null : currentDate]);
+
+            // Incrémenter la date en fonction de la fréquence
+            currentDate.setDate(currentDate.getDate() + (frequency === 'Hebdomadaire' ? 7 : 14));
+        }
+
+        const query = `
+            INSERT INTO DeliverySchedule (TourID, DeliveryDate, Frequency, IsHoliday, AdjustedDate) 
+            VALUES ?
+        `;
+        await conn.query(query, [schedule]);
+        conn.release();
+        res.status(201).json({ message: 'Calendrier créé avec succès.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Erreur lors de la création du calendrier.' });
+    }
+});
+
+
+app.get('/depots/jour/:day', async (req, res) => {
+  const { day } = req.params;
+  try {
+    const conn = await pool.getConnection();
+    const depots = await conn.query(
+      `SELECT * FROM Point_Depot WHERE FIND_IN_SET(?, Jour_Disponibilite)`,
+      [day]
+    );
+    conn.release();
+    res.json(depots);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des dépôts pour le jour:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération des dépôts.' });
+  }
+});
+
+
+app.post('/tours/generate', async (req, res) => {
+  const { tourDay, holidays, closureWeeks, frequency, basketsCount } = req.body;
+
+  try {
+    // Validation des données d'entrée
+    if (!tourDay || !frequency || !basketsCount) {
+      return res.status(400).json({ error: "Données manquantes : tourDay, frequency ou basketsCount" });
+    }
+
+    const schedule = [];
+    const startDate = new Date();
+    let currentDate = new Date(startDate);
+    let deliveriesRemaining = basketsCount;
+
+    // Boucle pour générer les livraisons
+    while (deliveriesRemaining > 0) {
+      // Passer à la semaine suivante
+      currentDate.setDate(currentDate.getDate() + 1);
+
+      // Vérifier si le jour correspond au jour de tournée
+      if (currentDate.toLocaleDateString('fr-FR', { weekday: 'long' }) !== tourDay) {
+        continue;
+      }
+
+      // Vérifier si c'est un jour férié ou une semaine de fermeture
+      const isoDate = currentDate.toISOString().split('T')[0];
+      const isHoliday = holidays.includes(isoDate);
+      const isClosureWeek = closureWeeks.some((week) => {
+        const [start, end] = week;
+        return new Date(start) <= currentDate && currentDate <= new Date(end);
+      });
+
+      if (isHoliday || isClosureWeek) {
+        continue; // Ignorer ce jour
+      }
+
+      // Ajouter la date au calendrier
+      schedule.push({
+        date: isoDate,
+        adjusted: false,
+      });
+
+      // Réduire le nombre de livraisons restantes
+      deliveriesRemaining--;
+
+      // Passer à la semaine suivante pour les fréquences bimensuelles
+      if (frequency === 'bimensuel') {
+        currentDate.setDate(currentDate.getDate() + 7);
+      }
+    }
+
+    res.status(200).json({ calendar: schedule });
+  } catch (error) {
+    console.error("Erreur lors de la génération du calendrier :", error);
+    res.status(500).json({ error: "Erreur serveur lors de la génération du calendrier." });
+  }
+});
+
 
   // Démarrer le serveur sur le port 4000
   const PORT = 4000;

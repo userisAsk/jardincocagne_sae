@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, Polyline, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import Footer from "./components/Footer";
 
-// Fix des icônes Leaflet
+// Fix Leaflet icons
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
@@ -17,19 +16,19 @@ const DeliveryManagement = () => {
   const [filteredTours, setFilteredTours] = useState([]);
   const [deliveryDate, setDeliveryDate] = useState("");
   const [selectedTourId, setSelectedTourId] = useState(null);
+  const [selectedDay, setSelectedDay] = useState("");
   const [points, setPoints] = useState([]);
   const [itineraire, setItineraire] = useState([]);
-  const [allDepots, setAllDepots] = useState([]);
+  const [depotsByDay, setDepotsByDay] = useState([]);
   const [selectedDepot, setSelectedDepot] = useState(null);
   const [selectedPoint, setSelectedPoint] = useState(null);
   const [currentColor, setCurrentColor] = useState("blue");
-  const [mapKey, setMapKey] = useState(0); // Utilisé pour forcer le rechargement de la carte
+  const [mapKey, setMapKey] = useState(0);
 
   const tourColors = {
-    "Parcours A": "red",
-    "Parcours B": "green",
-    "Parcours Alpha": "orange",
-    "Parcours Beta": "purple",
+    "Mardi": "blue",
+    "Mercredi": "green",
+    "Vendredi": "red",
   };
 
   useEffect(() => {
@@ -40,11 +39,13 @@ const DeliveryManagement = () => {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:4000/depots")
-      .then((res) => res.json())
-      .then((data) => setAllDepots(data))
-      .catch((err) => console.error("Erreur lors de la récupération des dépôts:", err));
-  }, []);
+    if (selectedDay) {
+      fetch(`http://localhost:4000/depots/jour/${selectedDay}`)
+        .then((res) => res.json())
+        .then((data) => setDepotsByDay(data))
+        .catch((err) => console.error("Erreur lors de la récupération des dépôts:", err));
+    }
+  }, [selectedDay]);
 
   useEffect(() => {
     if (!selectedTourId) return;
@@ -59,7 +60,7 @@ const DeliveryManagement = () => {
           setPoints([]);
           setItineraire([]);
         }
-        setMapKey((prevKey) => prevKey + 1); // Forcer le rechargement de la carte
+        setMapKey((prevKey) => prevKey + 1);
       })
       .catch((err) => console.error("Erreur lors de la récupération des points:", err));
   }, [selectedTourId]);
@@ -74,7 +75,8 @@ const DeliveryManagement = () => {
 
   const handleSelectTour = (tour) => {
     setSelectedTourId(tour.ID_Tournee);
-    setCurrentColor(tourColors[tour.Parcours] || "blue"); // Définir la couleur en fonction du parcours
+    setSelectedDay(tour.Parcours); // Associe le jour
+    setCurrentColor(tourColors[tour.Parcours] || "blue");
   };
 
   const handleAddDepot = () => {
@@ -176,7 +178,7 @@ const DeliveryManagement = () => {
             <h2 className="text-xl font-semibold mb-4">Carte de la tournée</h2>
             <div className="w-full h-[500px] mb-6">
               <MapContainer
-                key={mapKey} // Forcer le rechargement de la carte
+                key={mapKey}
                 center={[46.603354, 1.888334]}
                 zoom={5}
                 style={{ width: "100%", height: "100%" }}
@@ -203,12 +205,7 @@ const DeliveryManagement = () => {
                     </Tooltip>
                   </Marker>
                 ))}
-                {itineraire.length > 1 && (
-                  <Polyline
-                    positions={itineraire}
-                    color={currentColor} // Utilisation de la couleur dynamique
-                  />
-                )}
+                {itineraire.length > 1 && <Polyline positions={itineraire} color={currentColor} />}
               </MapContainer>
             </div>
 
@@ -219,7 +216,7 @@ const DeliveryManagement = () => {
                   className="p-2 border border-gray-300 rounded-md"
                 >
                   <option value="">Sélectionnez un dépôt</option>
-                  {allDepots.map((depot) => (
+                  {depotsByDay.map((depot) => (
                     <option key={depot.ID_Point_Depot} value={depot.ID_Point_Depot}>
                       {depot.Nom} - {depot.Adresse}
                     </option>
@@ -240,7 +237,7 @@ const DeliveryManagement = () => {
                 >
                   <option value="">Sélectionnez un point</option>
                   {points.map((point) => (
-                    <option key={point.ID_Point} value={point.ID_Point}>
+                    <option key={point.ID_Point_Depot} value={point.ID_Point_Depot}>
                       {point.Nom} - {point.Adresse}
                     </option>
                   ))}
@@ -249,7 +246,7 @@ const DeliveryManagement = () => {
                   onClick={handleDeletePoint}
                   className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600"
                 >
-                  Supprimer le point sélectionné
+                  Supprimer
                 </button>
               </div>
             </div>

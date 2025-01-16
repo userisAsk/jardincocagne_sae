@@ -50,21 +50,19 @@ function Header() {
                 Accueil
               </a>
             </li>
-            {user?.admin === 1 && (
               <li>
-                <a href="/transcribe" className="hover:text-blue-400">
+                <a href="/delivery" className="hover:text-blue-400">
                   Créer tournée livraison
                 </a>
               </li>
-            )}
             <li>
               <a href="/tarif" className="hover:text-blue-400">
-                Tarif
+                Calendrier
               </a>
             </li>
             <li>
-              <a href="/contact" className="hover:text-blue-400">
-                Contact
+              <a href="/abonnement" className="hover:text-blue-400">
+                Abonnement
               </a>
             </li>
           </ul>
