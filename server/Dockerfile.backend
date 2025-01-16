@@ -9,11 +9,12 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY server/package*.json ./
+COPY package*.json ./
+
 RUN npm install
 
-COPY server/ .
+COPY . .
 
 EXPOSE 4000
 
-CMD ["node", "--max-old-space-size=4096", "server.js"]
+CMD ["node", "--max-old-space-size=4096", "server.js"]  
