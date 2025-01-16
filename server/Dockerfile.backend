@@ -1,20 +1,24 @@
-FROM node:18.20.5
+# Utilisez une image légère et compatible
+FROM node:16-alpine
 
-# Installation des dépendances de compilation
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
+# Définir le répertoire de travail
 WORKDIR /app
 
-COPY package*.json ./
+# Copier les fichiers nécessaires
+COPY package.json ./
+COPY package-lock.json ./
 
+# Installer les dépendances
 RUN npm install
 
+# Copier le reste des fichiers
 COPY . .
 
-EXPOSE 4000
+# Construire l'application pour la production
+RUN npm run build
 
-CMD ["node", "--max-old-space-size=4096", "server.js"]  
+# Exposer le port pour le serveur
+EXPOSE 3000
+
+# Commande par défaut pour exécuter l'application
+CMD ["npm", "start"]
