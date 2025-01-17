@@ -58,3 +58,13 @@ footer {
   position: relative; /* Permet de rester en bas sans couvrir le contenu */
   width: 100%;
 }
+
+
+.custom-icon {
+  background: none;
+  border: none;
+}
+
+.leaflet-routing-container {
+  display: none;
+}

@@ -1,20 +1,19 @@
 FROM node:18.20.5
 
-# Installation des dépendances de compilation
-RUN apt-get update && apt-get install -y \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
+# Set the working directory inside the container
 WORKDIR /app
 
-COPY package*.json ./
+# Copy package files for dependency installation
+COPY ./server/package*.json ./
 
+# Install dependencies
 RUN npm install
 
-COPY . .
+# Copy the rest of the server directory
+COPY ./server .
 
+# Expose the application port
 EXPOSE 4000
 
-CMD ["node", "--max-old-space-size=4096", "server.js"]  
+# Run the server
+CMD ["node", "--max-old-space-size=4096", "server.js"]
