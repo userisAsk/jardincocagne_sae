@@ -226,7 +226,7 @@ const DeliverySchedule = () => {
       <div className="border-b pb-4 mb-6">
         <h2 className="text-2xl font-semibold flex items-center gap-2">
           <CalendarIcon className="w-6 h-6 text-blue-600" />
-          Planification des livraisons
+          Planification du calendrier
         </h2>
       </div>
 
