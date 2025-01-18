@@ -631,37 +631,42 @@
   });
 
 
-  app.post('/tours/:id/schedule', async (req, res) => {
-    const { frequency, startDate, endDate, holidays } = req.body;
-    const { id } = req.params;
+  app.post('/tours/:tourId/schedule', async (req, res) => {
+    const { tourId } = req.params;
+    const { DeliveryDate, Frequency, IsHoliday} = req.body;
     
     try {
-        const conn = await pool.getConnection();
-        let currentDate = new Date(startDate);
-        const schedule = [];
-
-        // Générer les dates en fonction de la fréquence
-        while (currentDate <= new Date(endDate)) {
-            const isHoliday = holidays.includes(currentDate.toISOString().split('T')[0]);
-            schedule.push([id, currentDate, frequency, isHoliday, isHoliday ? null : currentDate]);
-
-            // Incrémenter la date en fonction de la fréquence
-            currentDate.setDate(currentDate.getDate() + (frequency === 'Hebdomadaire' ? 7 : 14));
-        }
-
-        const query = `
-            INSERT INTO DeliverySchedule (TourID, DeliveryDate, Frequency, IsHoliday, AdjustedDate) 
-            VALUES ?
-        `;
-        await conn.query(query, [schedule]);
-        conn.release();
-        res.status(201).json({ message: 'Calendrier créé avec succès.' });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Erreur lors de la création du calendrier.' });
+      const conn = await pool.getConnection();
+      await conn.query(
+        `INSERT INTO DeliverySchedule (TourID, DeliveryDate, Frequency, IsHoliday) 
+         VALUES (?, ?, ?, ?)`,
+        [tourId, DeliveryDate, Frequency, IsHoliday]
+      );
+      conn.release();
+      res.status(201).json({ message: 'Date ajoutée avec succès' });
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de la date:', error);
+      res.status(500).json({ error: 'Erreur lors de l\'ajout de la date.' });
     }
-});
+  });
 
+
+  app.delete('/tours/:tourId/schedule/:date', async (req, res) => {
+    const { tourId, date } = req.params;
+    
+    try {
+      const conn = await pool.getConnection();
+      await conn.query(
+        'DELETE FROM DeliverySchedule WHERE TourID = ? AND DeliveryDate = ?',
+        [tourId, date]
+      );
+      conn.release();
+      res.status(200).json({ message: 'Date supprimée avec succès' });
+    } catch (error) {
+      console.error('Erreur lors de la suppression de la date:', error);
+      res.status(500).json({ error: 'Erreur lors de la suppression de la date.' });
+    }
+  });
 
 app.get('/depots/jour/:day', async (req, res) => {
   const { day } = req.params;
@@ -679,6 +684,27 @@ app.get('/depots/jour/:day', async (req, res) => {
   }
 });
 
+
+// Ajoutez cette route dans votre fichier server.js
+app.get('/tours/:tourId/schedule', async (req, res) => {
+  const { tourId } = req.params;
+  const { frequency } = req.query;
+  
+  try {
+    const conn = await pool.getConnection();
+    const schedules = await conn.query(
+      `SELECT * FROM DeliverySchedule 
+       WHERE TourID = ? AND Frequency = ?
+       ORDER BY DeliveryDate ASC`,
+      [tourId, frequency]
+    );
+    conn.release();
+    res.json(schedules);
+  } catch (error) {
+    console.error('Erreur lors de la récupération du calendrier:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération du calendrier.' });
+  }
+});
 
 app.post('/tours/generate', async (req, res) => {
   const { tourDay, holidays, closureWeeks, frequency, basketsCount } = req.body;
