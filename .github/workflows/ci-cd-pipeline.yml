@@ -29,7 +29,7 @@ jobs:
 
       - name: Build Docker image pour le backend
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/backend:latest -f ./server/Dockerfile.backend ./server
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/backend:latest -f server/Dockerfile.backend server
 
       - name: Push Docker images a Docker Hub
         run: |
