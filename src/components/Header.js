@@ -10,7 +10,7 @@ function Header() {
 
   // Détecter si on est sur la page "DeliveryManagement"
   const HeaderBcPages = ['/delivery', '/calendrier', '/abonnement'];
-  const isDeliveryPage = HeaderBcPages.includes(location.pathname);
+  const isHeaderbcPage = HeaderBcPages.includes(location.pathname);
 
 
   useEffect(() => {
@@ -33,7 +33,7 @@ function Header() {
   return (
     <header
       className={`${
-        HeaderBcPages ? 'bg-gray-800 text-white' : 'bg-transparent text-white'
+        isHeaderbcPage ? 'bg-gray-800 text-white' : 'bg-transparent text-white'
       } py-4 fixed w-full top-0 z-50 transition-transform ${
         hidden ? '-translate-y-full' : 'translate-y-0'
       }`}
