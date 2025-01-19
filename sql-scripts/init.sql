@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mariadb:3306
--- Généré le : sam. 11 jan. 2025 à 08:33
+-- Généré le : dim. 19 jan. 2025 à 11:36
 -- Version du serveur : 10.9.8-MariaDB-1:10.9.8+maria~ubu2204
 -- Version de PHP : 8.2.8
 
@@ -30,20 +30,22 @@ SET time_zone = "+00:00";
 CREATE TABLE `Abonnement` (
   `ID_Abonnement` int(11) NOT NULL,
   `Type_Abonnement` varchar(100) NOT NULL,
-  `Frequence_Livraison` enum('hebdomadaire','mensuel','bimensuel') NOT NULL,
+  `Frequence_Livraison` enum('hebdomadaire','bimensuel') NOT NULL,
   `Duree` int(11) NOT NULL,
   `Calendrier_Livraison` text DEFAULT NULL,
   `ID_Adherent` int(11) NOT NULL,
-  `ID_Tournee` int(11) DEFAULT NULL
+  `ID_Tournee` int(11) DEFAULT NULL,
+  `Type_Paiement` varchar(50) NOT NULL,
+  `Frequence_Paiement` varchar(50) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `Abonnement`
 --
 
-INSERT INTO `Abonnement` (`ID_Abonnement`, `Type_Abonnement`, `Frequence_Livraison`, `Duree`, `Calendrier_Livraison`, `ID_Adherent`, `ID_Tournee`) VALUES
-(1, 'Premium', 'hebdomadaire', 6, 'Chaque lundi', 1, 1),
-(2, 'Standard', 'mensuel', 12, '1er du mois', 2, 2);
+INSERT INTO `Abonnement` (`ID_Abonnement`, `Type_Abonnement`, `Frequence_Livraison`, `Duree`, `Calendrier_Livraison`, `ID_Adherent`, `ID_Tournee`, `Type_Paiement`, `Frequence_Paiement`) VALUES
+(1, 'Premium', 'hebdomadaire', 6, 'Chaque lundi', 1, 1, '', ''),
+(2, 'Standard', 'hebdomadaire', 12, '1er du mois', 2, 2, '', '');
 
 -- --------------------------------------------------------
 
@@ -52,24 +54,57 @@ INSERT INTO `Abonnement` (`ID_Abonnement`, `Type_Abonnement`, `Frequence_Livrais
 --
 
 CREATE TABLE `Adherent` (
-  `ID_Adherent` int(11) NOT NULL,
-  `Nom` varchar(100) NOT NULL,
-  `Prenom` varchar(100) NOT NULL,
-  `Email` varchar(150) NOT NULL,
+  `Id_adherent` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `admin` tinyint(1) DEFAULT 0,
   `Telephone` varchar(15) DEFAULT NULL,
-  `Adresse` text DEFAULT NULL,
-  `Coordonnees_Bancaires` text DEFAULT NULL,
-  `Role` varchar(50) DEFAULT NULL,
-  `Historique` text DEFAULT NULL
+  `ID_Abonnement` int(11) DEFAULT NULL,
+  `ID_Adresse` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `Adherent`
 --
 
-INSERT INTO `Adherent` (`ID_Adherent`, `Nom`, `Prenom`, `Email`, `Telephone`, `Adresse`, `Coordonnees_Bancaires`, `Role`, `Historique`) VALUES
-(1, 'Dupont', 'Jean', 'jean.dupont@example.com', '0123456789', '12 rue des Lilas, Paris', 'FR761234567890', 'client', 'Ancien adhérent'),
-(2, 'Martin', 'Marie', 'marie.martin@example.com', '0987654321', '34 avenue des Champs, Lyon', 'FR761234567891', 'client', 'Nouveau adhérent');
+INSERT INTO `Adherent` (`Id_adherent`, `email`, `password`, `name`, `created_at`, `admin`, `Telephone`, `ID_Abonnement`, `ID_Adresse`) VALUES
+(1, 'ddd@gmail.com', '$2b$10$JWz7JelU2tng99CZRZKiu.BDh0weIgXgGFC/NfxEaczrYTbojFSCy', 'dddd', '2024-12-20 13:57:17', 0, NULL, NULL, NULL),
+(2, 'youtbue.lol@gmail.com', NULL, 'Myyrai', '2024-12-20 13:59:25', 0, NULL, NULL, NULL),
+(3, 'ask@gmail.com', '$2b$10$qYmjAxIR0shfSnhDd0GKEeWMsSB8YOotZu2Ef/d4x0wrYkNpSMFrG', 'ask', '2024-12-20 14:05:12', 0, NULL, NULL, NULL),
+(4, 'loli@gmail.com', '$2b$10$gHbKTIdWyrewmEQDESiB7OlZQbnTwvA2xdyw07jGOz8rY/ecX9Mj2', 'paille ', '2024-12-20 17:41:10', 0, NULL, NULL, NULL),
+(5, 'dqddd@gmaiL.com', '$2b$10$C9ZuOOCzcpR6B73SRmcU6.VWEMxSe8RhYTOi3mShGOaSjK398.NZ2', 'zouzou', '2024-12-20 17:50:45', 0, NULL, NULL, NULL),
+(6, 'dqdqddqd@gmail.com', '$2b$10$sNS8TdAI4zCBDV9eF/W4jOgjQKK8ZoJ0YTPwY/nDSruXAV79I7voG', 'ae', '2024-12-20 18:09:15', 0, NULL, NULL, NULL),
+(7, 'cc@gmail.com', '$2b$10$0p9U6cx9FAljw9N.3SR/Z.9dwVduWDbY8qANTK6SFVzySDK0hFUaS', 'coucouc', '2024-12-20 18:24:27', 0, NULL, NULL, NULL),
+(8, 'qdqdqd@gmail.com', '$2b$10$sb/znZ6UJKlMKHUdDDhev.xVWVRJZdkll1UH6k0pvTpknGt6PigFq', 'ask', '2024-12-29 22:19:53', 0, NULL, NULL, NULL),
+(9, 'kyriann.paille@gmail.com', NULL, 'Kyriann PAILLE', '2024-12-30 00:19:22', 0, NULL, NULL, NULL),
+(10, 'sss@gmail.com', '$2b$10$K3ql5L2rGvifY0uzvQvHz.a5d8UmNgNnNCAe7crBYyHxLbHFRYBvm', 'ask', '2024-12-30 02:12:06', 1, NULL, NULL, NULL),
+(11, 'zouzoudi22@gmail.com', NULL, 'Zouzoudi', '2025-01-05 22:42:35', 0, NULL, NULL, NULL),
+(12, 'kqdkdqkdkqd@gmail.com', '$2b$10$TOTPK/o8LbqEelD/SZBre.8VKnr29bqcQB8GZjqyx2OlykzhHSXsW', 'dqdqkd', '2025-01-09 01:09:05', 0, NULL, NULL, NULL),
+(13, 'dqjjdqjdq@gmail.com', '$2b$10$oQsrB7nAy/U4uMIKEum.m.p9YLzxQzpJFQCWJ9GHXsydFHJeem6OW', 'qkdqjk', '2025-01-09 01:15:16', 0, NULL, NULL, NULL),
+(14, 'rodriguez@gmail.com', '$2a$10$2dounwUu67xwIBaW5U2UMe22cmmay9O2YZ3U6Dk7j.p5Ssx6w8mXW', 'alexis', '2025-01-13 00:10:12', 0, '0645237688', NULL, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `Adresse`
+--
+
+CREATE TABLE `Adresse` (
+  `ID_Adresse` int(11) NOT NULL,
+  `Rue` varchar(255) NOT NULL,
+  `Code_Postal` varchar(10) NOT NULL,
+  `Ville` varchar(100) NOT NULL,
+  `ID_Adherent` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `Adresse`
+--
+
+INSERT INTO `Adresse` (`ID_Adresse`, `Rue`, `Code_Postal`, `Ville`, `ID_Adherent`) VALUES
+(1, '10 Rue des Lilas', '75001', 'Paris', 14);
 
 -- --------------------------------------------------------
 
@@ -83,17 +118,40 @@ CREATE TABLE `Commande` (
   `Etat_Commande` enum('en préparation','livré','annulé') NOT NULL,
   `Quantite` int(11) NOT NULL CHECK (`Quantite` > 0),
   `ID_Produit` int(11) NOT NULL,
-  `ID_Adherent` int(11) NOT NULL,
-  `ID_Point_Depot` int(11) NOT NULL
+  `ID_Point_Depot` int(11) NOT NULL,
+  `ID_Adherent` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `Commande`
 --
 
-INSERT INTO `Commande` (`ID_Commande`, `Date_Commande`, `Etat_Commande`, `Quantite`, `ID_Produit`, `ID_Adherent`, `ID_Point_Depot`) VALUES
+INSERT INTO `Commande` (`ID_Commande`, `Date_Commande`, `Etat_Commande`, `Quantite`, `ID_Produit`, `ID_Point_Depot`, `ID_Adherent`) VALUES
 (1, '2024-12-17', 'en préparation', 5, 1, 1, 1),
 (2, '2024-12-18', 'livré', 2, 2, 2, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `DeliverySchedule`
+--
+
+CREATE TABLE `DeliverySchedule` (
+  `ScheduleID` int(11) NOT NULL,
+  `TourID` int(11) NOT NULL,
+  `DeliveryDate` date NOT NULL,
+  `Frequency` enum('Hebdomadaire','Bimensuel') NOT NULL,
+  `IsHoliday` tinyint(1) DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Déchargement des données de la table `DeliverySchedule`
+--
+
+INSERT INTO `DeliverySchedule` (`ScheduleID`, `TourID`, `DeliveryDate`, `Frequency`, `IsHoliday`) VALUES
+(1, 1, '2025-01-20', 'Hebdomadaire', 0),
+(2, 2, '2025-01-20', 'Hebdomadaire', 0),
+(6, 1, '2025-01-15', 'Hebdomadaire', 0);
 
 -- --------------------------------------------------------
 
@@ -131,18 +189,35 @@ CREATE TABLE `Point_Depot` (
   `Longitude` decimal(11,8) NOT NULL,
   `Responsable` varchar(100) DEFAULT NULL,
   `Horaires_Ouverture` text DEFAULT NULL,
-  `Commentaires` text DEFAULT NULL
+  `Commentaires` text DEFAULT NULL,
+  `Jour_Disponibilite` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Déchargement des données de la table `Point_Depot`
 --
 
-INSERT INTO `Point_Depot` (`ID_Point_Depot`, `Nom`, `Adresse`, `Latitude`, `Longitude`, `Responsable`, `Horaires_Ouverture`, `Commentaires`) VALUES
-(1, 'Point A', '12 rue des Dépôts, Paris', 48.85660000, 2.35220000, 'M. Dupont', '8h-18h', 'Aucun commentaire'),
-(2, 'Point B', '45 avenue de la Logistique, Lyon', 45.76400000, 4.83570000, 'Mme Martin', '9h-17h', 'Réception limitée le samedi'),
-(8, 'Dépôt C', '20 boulevard Saint-Michel, Marseille', 43.29650000, 5.36980000, 'M. Durand', '7h-15h', 'Pas de stockage possible'),
-(9, 'Dépôt D', '5 rue du Commerce, Lille', 50.62920000, 3.05730000, 'Mme Bernard', '10h-19h', 'Ouvert le samedi');
+INSERT INTO `Point_Depot` (`ID_Point_Depot`, `Nom`, `Adresse`, `Latitude`, `Longitude`, `Responsable`, `Horaires_Ouverture`, `Commentaires`, `Jour_Disponibilite`) VALUES
+(1, 'Point A', '12 rue des Dépôts, Paris', 48.85660000, 2.35220000, 'M. Dupont', '8h-18h', 'Aucun commentaire', NULL),
+(2, 'Point B', '45 avenue de la Logistique, Lyon', 45.76400000, 4.83570000, 'Mme Martin', '9h-17h', 'Réception limitée le samedi', NULL),
+(22, 'Épinal', 'Église Saint Antoine, 12 rue Armand Colle', 48.17326000, 6.44914000, 'Non spécifié', 'À partir de 15h - Armoires avec code', 'Aucun commentaire', 'Mardi, Mecredi ,Vendredi'),
+(23, 'Épinal', 'Ligue de l\'enseignement, 15 rue Général de Reffye', 48.17389000, 6.45100000, 'Non spécifié', 'À partir de 15h - Armoires avec code', 'Aucun commentaire', 'Mardi, Mecredi ,Vendredi'),
+(24, 'Épinal', 'Centre Léo LaGrange, 6 Avenue Salvador Allende', 48.17750000, 6.45390000, 'Non spécifié', 'À partir de 15h - Armoires avec code', 'Aucun commentaire', 'Mardi, Mecredi ,Vendredi'),
+(25, 'Dinozé', 'APF - Local extérieur - ESAT, Rue de la papeterie', 48.16840000, 6.45530000, 'Non spécifié', 'À partir de 14h - Armoire libre', 'Aucun commentaire', 'Mardi'),
+(26, 'Golbey', 'Ecodenn\'ergie, 36 bis rue de la Plaine', 48.18360000, 6.43010000, 'Non spécifié', 'À partir de 15h - Armoires avec code', 'Aucun commentaire', 'Mardi, Mercredi, Vendredi'),
+(27, 'Golbey', 'Botanic, Avenue des Terres St Jean', 48.19070000, 6.42890000, 'Non spécifié', 'À partir de 15h - Ferme à 19h', 'Aucun commentaire', 'Mardi, Mercredi, Vendredi'),
+(28, 'St Nabord', 'Pharmacie Robert, 24, rue du Gal de Gaulle', 48.01640000, 6.62060000, NULL, 'A partir de 15h - armoires avec code', NULL, NULL),
+(29, 'Remiremont', 'Association AGACI, 26, Rue de la Joncherie', 48.01670000, 6.59690000, NULL, 'A partir de 15h - armoires avec code', NULL, NULL),
+(30, 'Raon aux Bois', 'Mme Bedez, 7, Rue du Savron', 48.06910000, 6.59750000, NULL, 'A partir de 16h', NULL, 'Mercredi'),
+(31, 'Docelles', 'Mr et Mme Boulassel, 1, rue Moncey', 48.11850000, 6.58690000, NULL, 'A partir de 16h30 - armoires avec code', NULL, 'Mercredi'),
+(32, 'Thaon', 'Jardins de Cocagne, Prairie Claudel', 48.20780000, 6.44250000, NULL, 'De 9h à 18h', NULL, 'Mercredi'),
+(33, 'Charmes', 'Complexe Sportif R. Simonin, Bvd Georges Clémenceau', 48.37880000, 6.03860000, NULL, 'A partir de 15h30 - armoires avec codes', NULL, NULL),
+(34, 'Vincey', 'Résidence du Monsey, Ruelle du Monsey', 48.34470000, 6.34580000, NULL, 'A partir de 15h30 - armoires avec codes', NULL, NULL),
+(35, 'Bruyères', 'Point Vert Mafra, Zac Barbazan', 48.21610000, 6.71950000, NULL, 'A partir de 11h - Ferme à 19h', NULL, 'Vendredi'),
+(36, 'Bruyères', 'Brico Marché, 2 rue de Fraisne', 48.21590000, 6.72030000, NULL, 'A partir de 11h - armoires avec code', NULL, 'Vendredi'),
+(37, 'Gérardmer', 'Pro et Cie, 45, Boulevard d\'Alsace', 48.07480000, 6.87930000, NULL, 'A partir de 11h - armoires avec code', NULL, 'Vendredi'),
+(38, 'Le Tholy', 'M. Lecomte, 24, route du Noirpré', 48.08230000, 6.74830000, NULL, 'A partir de 11h', NULL, NULL),
+(39, 'Les Forges', 'Mme. Adinolfi, 7, allée des Primevères', 48.17360000, 6.46090000, NULL, 'A partir de 11h', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -187,10 +262,9 @@ CREATE TABLE `Tournee` (
 --
 
 INSERT INTO `Tournee` (`ID_Tournee`, `Jour_Preparation`, `Jour_Livraison`, `Etat_Tournee`, `Parcours`) VALUES
-(1, '2024-12-20', '2024-12-21', 'en cours', 'Parcours A'),
-(2, '2024-12-18', '2024-12-19', 'terminée', 'Parcours B'),
-(3, '2025-01-10', '2025-01-11', 'en cours', 'Parcours Alpha'),
-(4, '2025-01-12', '2025-01-13', 'terminée', 'Parcours Beta');
+(1, '2024-12-20', '2025-12-02', 'en cours', 'Mardi'),
+(2, '2024-12-18', '2025-01-15', 'terminée', 'Mercredi'),
+(3, '2025-01-10', '2025-01-24', 'en cours', 'Vendredi');
 
 -- --------------------------------------------------------
 
@@ -209,46 +283,14 @@ CREATE TABLE `Tournee_Points` (
 --
 
 INSERT INTO `Tournee_Points` (`ID_Tournee`, `ID_Point_Depot`, `Ordre`) VALUES
-(4, 1, 1),
-(4, 2, 2);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `users`
---
-
-CREATE TABLE `users` (
-  `id` int(11) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) DEFAULT NULL,
-  `google_id` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `auth_method` enum('google','manual') DEFAULT 'manual',
-  `subscription_status` enum('active','inactive') DEFAULT 'inactive',
-  `subscription_expiry` date DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `admin` tinyint(1) DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Déchargement des données de la table `users`
---
-
-INSERT INTO `users` (`id`, `email`, `password`, `google_id`, `name`, `auth_method`, `subscription_status`, `subscription_expiry`, `created_at`, `admin`) VALUES
-(1, 'ddd@gmail.com', '$2b$10$JWz7JelU2tng99CZRZKiu.BDh0weIgXgGFC/NfxEaczrYTbojFSCy', NULL, 'dddd', 'manual', 'inactive', NULL, '2024-12-20 13:57:17', 0),
-(2, 'youtbue.lol@gmail.com', NULL, '116131400997092485320', 'Myyrai', 'google', 'inactive', NULL, '2024-12-20 13:59:25', 0),
-(3, 'ask@gmail.com', '$2b$10$qYmjAxIR0shfSnhDd0GKEeWMsSB8YOotZu2Ef/d4x0wrYkNpSMFrG', NULL, 'ask', 'manual', 'inactive', NULL, '2024-12-20 14:05:12', 0),
-(4, 'loli@gmail.com', '$2b$10$gHbKTIdWyrewmEQDESiB7OlZQbnTwvA2xdyw07jGOz8rY/ecX9Mj2', NULL, 'paille ', 'manual', 'inactive', NULL, '2024-12-20 17:41:10', 0),
-(5, 'dqddd@gmaiL.com', '$2b$10$C9ZuOOCzcpR6B73SRmcU6.VWEMxSe8RhYTOi3mShGOaSjK398.NZ2', NULL, 'zouzou', 'manual', 'inactive', NULL, '2024-12-20 17:50:45', 0),
-(6, 'dqdqddqd@gmail.com', '$2b$10$sNS8TdAI4zCBDV9eF/W4jOgjQKK8ZoJ0YTPwY/nDSruXAV79I7voG', NULL, 'ae', 'manual', 'inactive', NULL, '2024-12-20 18:09:15', 0),
-(7, 'cc@gmail.com', '$2b$10$0p9U6cx9FAljw9N.3SR/Z.9dwVduWDbY8qANTK6SFVzySDK0hFUaS', NULL, 'coucouc', 'manual', 'inactive', NULL, '2024-12-20 18:24:27', 0),
-(8, 'qdqdqd@gmail.com', '$2b$10$sb/znZ6UJKlMKHUdDDhev.xVWVRJZdkll1UH6k0pvTpknGt6PigFq', NULL, 'ask', 'manual', 'inactive', NULL, '2024-12-29 22:19:53', 0),
-(9, 'kyriann.paille@gmail.com', NULL, '109385914937696005530', 'Kyriann PAILLE', 'google', 'inactive', NULL, '2024-12-30 00:19:22', 0),
-(10, 'sss@gmail.com', '$2b$10$K3ql5L2rGvifY0uzvQvHz.a5d8UmNgNnNCAe7crBYyHxLbHFRYBvm', NULL, 'ask', 'manual', 'inactive', NULL, '2024-12-30 02:12:06', 1),
-(11, 'zouzoudi22@gmail.com', NULL, '115832387124129687760', 'Zouzoudi', 'google', 'inactive', NULL, '2025-01-05 22:42:35', 0),
-(12, 'kqdkdqkdkqd@gmail.com', '$2b$10$TOTPK/o8LbqEelD/SZBre.8VKnr29bqcQB8GZjqyx2OlykzhHSXsW', NULL, 'dqdqkd', 'manual', 'inactive', NULL, '2025-01-09 01:09:05', 0),
-(13, 'dqjjdqjdq@gmail.com', '$2b$10$oQsrB7nAy/U4uMIKEum.m.p9YLzxQzpJFQCWJ9GHXsydFHJeem6OW', NULL, 'qkdqjk', 'manual', 'inactive', NULL, '2025-01-09 01:15:16', 0);
+(1, 1, 1),
+(1, 22, 3),
+(1, 24, 5),
+(1, 25, 1),
+(2, 2, 4),
+(2, 35, 5),
+(3, 1, 2),
+(3, 2, 1);
 
 --
 -- Index pour les tables déchargées
@@ -259,15 +301,23 @@ INSERT INTO `users` (`id`, `email`, `password`, `google_id`, `name`, `auth_metho
 --
 ALTER TABLE `Abonnement`
   ADD PRIMARY KEY (`ID_Abonnement`),
-  ADD KEY `ID_Adherent` (`ID_Adherent`),
   ADD KEY `ID_Tournee` (`ID_Tournee`);
 
 --
 -- Index pour la table `Adherent`
 --
 ALTER TABLE `Adherent`
-  ADD PRIMARY KEY (`ID_Adherent`),
-  ADD UNIQUE KEY `Email` (`Email`);
+  ADD PRIMARY KEY (`Id_adherent`),
+  ADD UNIQUE KEY `email` (`email`),
+  ADD KEY `Adherent_ibfk_Abonnement` (`ID_Abonnement`),
+  ADD KEY `FK_Adherent_Adresse` (`ID_Adresse`);
+
+--
+-- Index pour la table `Adresse`
+--
+ALTER TABLE `Adresse`
+  ADD PRIMARY KEY (`ID_Adresse`),
+  ADD KEY `ID_Adherent` (`ID_Adherent`);
 
 --
 -- Index pour la table `Commande`
@@ -275,8 +325,15 @@ ALTER TABLE `Adherent`
 ALTER TABLE `Commande`
   ADD PRIMARY KEY (`ID_Commande`),
   ADD KEY `ID_Produit` (`ID_Produit`),
-  ADD KEY `ID_Adherent` (`ID_Adherent`),
-  ADD KEY `ID_Point_Depot` (`ID_Point_Depot`);
+  ADD KEY `ID_Point_Depot` (`ID_Point_Depot`),
+  ADD KEY `Commande_ibfk_Adherent` (`ID_Adherent`);
+
+--
+-- Index pour la table `DeliverySchedule`
+--
+ALTER TABLE `DeliverySchedule`
+  ADD PRIMARY KEY (`ScheduleID`),
+  ADD KEY `TourID` (`TourID`);
 
 --
 -- Index pour la table `Document`
@@ -289,8 +346,7 @@ ALTER TABLE `Document`
 -- Index pour la table `Point_Depot`
 --
 ALTER TABLE `Point_Depot`
-  ADD PRIMARY KEY (`ID_Point_Depot`),
-  ADD UNIQUE KEY `Nom` (`Nom`);
+  ADD PRIMARY KEY (`ID_Point_Depot`);
 
 --
 -- Index pour la table `Produit`
@@ -313,13 +369,6 @@ ALTER TABLE `Tournee_Points`
   ADD KEY `ID_Point_Depot` (`ID_Point_Depot`);
 
 --
--- Index pour la table `users`
---
-ALTER TABLE `users`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `email` (`email`);
-
---
 -- AUTO_INCREMENT pour les tables déchargées
 --
 
@@ -333,13 +382,25 @@ ALTER TABLE `Abonnement`
 -- AUTO_INCREMENT pour la table `Adherent`
 --
 ALTER TABLE `Adherent`
-  MODIFY `ID_Adherent` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `Id_adherent` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+
+--
+-- AUTO_INCREMENT pour la table `Adresse`
+--
+ALTER TABLE `Adresse`
+  MODIFY `ID_Adresse` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT pour la table `Commande`
 --
 ALTER TABLE `Commande`
   MODIFY `ID_Commande` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT pour la table `DeliverySchedule`
+--
+ALTER TABLE `DeliverySchedule`
+  MODIFY `ScheduleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT pour la table `Document`
@@ -351,7 +412,7 @@ ALTER TABLE `Document`
 -- AUTO_INCREMENT pour la table `Point_Depot`
 --
 ALTER TABLE `Point_Depot`
-  MODIFY `ID_Point_Depot` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `ID_Point_Depot` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT pour la table `Produit`
@@ -366,12 +427,6 @@ ALTER TABLE `Tournee`
   MODIFY `ID_Tournee` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT pour la table `users`
---
-ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
 -- Contraintes pour les tables déchargées
 --
 
@@ -379,16 +434,34 @@ ALTER TABLE `users`
 -- Contraintes pour la table `Abonnement`
 --
 ALTER TABLE `Abonnement`
-  ADD CONSTRAINT `Abonnement_ibfk_1` FOREIGN KEY (`ID_Adherent`) REFERENCES `Adherent` (`ID_Adherent`) ON DELETE CASCADE,
   ADD CONSTRAINT `Abonnement_ibfk_2` FOREIGN KEY (`ID_Tournee`) REFERENCES `Tournee` (`ID_Tournee`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `Adherent`
+--
+ALTER TABLE `Adherent`
+  ADD CONSTRAINT `Adherent_ibfk_Abonnement` FOREIGN KEY (`ID_Abonnement`) REFERENCES `Abonnement` (`ID_Abonnement`) ON DELETE SET NULL,
+  ADD CONSTRAINT `FK_Adherent_Adresse` FOREIGN KEY (`ID_Adresse`) REFERENCES `Adresse` (`ID_Adresse`) ON DELETE SET NULL;
+
+--
+-- Contraintes pour la table `Adresse`
+--
+ALTER TABLE `Adresse`
+  ADD CONSTRAINT `Adresse_ibfk_1` FOREIGN KEY (`ID_Adherent`) REFERENCES `Adherent` (`Id_adherent`) ON DELETE CASCADE;
 
 --
 -- Contraintes pour la table `Commande`
 --
 ALTER TABLE `Commande`
   ADD CONSTRAINT `Commande_ibfk_1` FOREIGN KEY (`ID_Produit`) REFERENCES `Produit` (`ID_Produit`) ON DELETE CASCADE,
-  ADD CONSTRAINT `Commande_ibfk_2` FOREIGN KEY (`ID_Adherent`) REFERENCES `Adherent` (`ID_Adherent`) ON DELETE CASCADE,
-  ADD CONSTRAINT `Commande_ibfk_3` FOREIGN KEY (`ID_Point_Depot`) REFERENCES `Point_Depot` (`ID_Point_Depot`);
+  ADD CONSTRAINT `Commande_ibfk_3` FOREIGN KEY (`ID_Point_Depot`) REFERENCES `Point_Depot` (`ID_Point_Depot`),
+  ADD CONSTRAINT `Commande_ibfk_Adherent` FOREIGN KEY (`ID_Adherent`) REFERENCES `Adherent` (`Id_adherent`) ON DELETE CASCADE;
+
+--
+-- Contraintes pour la table `DeliverySchedule`
+--
+ALTER TABLE `DeliverySchedule`
+  ADD CONSTRAINT `DeliverySchedule_ibfk_1` FOREIGN KEY (`TourID`) REFERENCES `Tournee` (`ID_Tournee`);
 
 --
 -- Contraintes pour la table `Document`

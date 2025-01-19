@@ -56,7 +56,7 @@ function Header() {
                 </a>
               </li>
             <li>
-              <a href="/tarif" className="hover:text-blue-400">
+              <a href="/calendrier" className="hover:text-blue-400">
                 Calendrier
               </a>
             </li>

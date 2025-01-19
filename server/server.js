@@ -116,7 +116,69 @@
 
 
 
-
+    /**
+   * @swagger
+   * /adherents/{id}:
+   *   get:
+   *     summary: Récupérer les informations d'un adhérent
+   *     description: Renvoie les informations détaillées d'un adhérent spécifique, y compris ses coordonnées et son adresse.
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: ID de l'adhérent à récupérer.
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Informations de l'adhérent récupérées avec succès.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 Id_adherent:
+   *                   type: integer
+   *                   description: ID de l'adhérent.
+   *                 email:
+   *                   type: string
+   *                   description: Email de l'adhérent.
+   *                 name:
+   *                   type: string
+   *                   description: Nom de l'adhérent.
+   *                 Telephone:
+   *                   type: string
+   *                   description: Numéro de téléphone de l'adhérent.
+   *                 Rue:
+   *                   type: string
+   *                   description: Rue de l'adresse de l'adhérent.
+   *                 Code_Postal:
+   *                   type: string
+   *                   description: Code postal de l'adresse.
+   *                 Ville:
+   *                   type: string
+   *                   description: Ville de l'adresse.
+   *       404:
+   *         description: Adhérent non trouvé.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: Adhérent non trouvé.
+   *       500:
+   *         description: Erreur lors de la récupération de l'adhérent.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: Erreur lors de la récupération de l'adhérent.
+   */
   app.get('/adherents/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -143,7 +205,280 @@
   });
 
 
-  //CONNEXION MODE
+ 
+
+  /**
+   * @swagger
+   * /depots:
+   *   get:
+   *     summary: Liste des dépôts
+   *     description: Renvoie tous les dépôts disponibles.
+   *     responses:
+   *       200:
+   *         description: Liste des dépôts.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 type: object
+   *       500:
+   *         description: Erreur serveur.
+   */
+  app.get('/depots', async (req, res) => {
+    try {
+      const conn = await pool.getConnection();
+      const depots = await conn.query('SELECT * FROM Point_Depot');
+      conn.release();
+      res.status(200).json(depots);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des dépôts :', error);
+      res.status(500).json({ error: 'Erreur lors de la récupération des dépôts.' });
+    }
+  });
+
+    /**
+   * @swagger
+   * /tours:
+   *   get:
+   *     summary: Liste des tournées
+   *     description: Renvoie toutes les tournées disponibles.
+   *     responses:
+   *       200:
+   *         description: Liste des tournées.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 type: object
+   *       500:
+   *         description: Erreur serveur.
+   */
+    app.get('/tours', async (req, res) => {
+      try {
+        const conn = await pool.getConnection();
+        const tours = await conn.query('SELECT * FROM Tournee');
+        conn.release();
+        res.json(tours);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Erreur lors de la récupération des tournées.' });
+      }
+    });
+  
+  
+  /**
+   * @swagger
+   * /tours/{id}:
+   *   get:
+   *     summary: Récupérer les détails d'une tournée spécifique
+   *     description: Renvoie les informations d'une tournée ainsi que les points associés, triés par ordre.
+   *     parameters:
+   *       - in: path
+   *         name: id
+   *         required: true
+   *         description: ID de la tournée à récupérer.
+   *         schema:
+   *           type: integer
+   *     responses:
+   *       200:
+   *         description: Détails de la tournée et liste des points.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 tournee:
+   *                   type: object
+   *                   description: Informations sur la tournée.
+   *                   properties:
+   *                     ID_Tournee:
+   *                       type: integer
+   *                     Jour_Preparation:
+   *                       type: string
+   *                       format: date
+   *                     Jour_Livraison:
+   *                       type: string
+   *                       format: date
+   *                     Etat_Tournee:
+   *                       type: string
+   *                     Parcours:
+   *                       type: string
+   *                 points:
+   *                   type: array
+   *                   description: Liste des points associés à la tournée.
+   *                   items:
+   *                     type: object
+   *                     properties:
+   *                       ID_Point_Depot:
+   *                         type: integer
+   *                       Nom:
+   *                         type: string
+   *                       Adresse:
+   *                         type: string
+   *                       Latitude:
+   *                         type: number
+   *                       Longitude:
+   *                         type: number
+   *       404:
+   *         description: Tournée non trouvée.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: Tournée non trouvée.
+   *       500:
+   *         description: Erreur serveur.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: Erreur lors de la récupération de la tournée.
+   */
+  app.get('/tours/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+      const conn = await pool.getConnection();
+      const tournee = await conn.query('SELECT * FROM Tournee WHERE ID_Tournee = ?', [id]);
+
+      if (!tournee.length) {
+        conn.release();
+        return res.status(404).json({ error: 'Tournée non trouvée.' });
+      }
+
+      const points = await conn.query(
+        'SELECT pd.* FROM Tournee_Points tp JOIN Point_Depot pd ON tp.ID_Point_Depot = pd.ID_Point_Depot WHERE tp.ID_Tournee = ? ORDER BY tp.Ordre',
+        [id]
+      );
+      conn.release();
+
+      res.json({ tournee: tournee[0], points });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Erreur lors de la récupération de la tournée.' });
+    }
+  });
+
+
+  
+    /**
+   * @swagger
+   * /depots/jour/{day}:
+   *   get:
+   *     summary: Récupérer les dépôts disponibles un jour spécifique
+   *     description: Renvoie les dépôts accessibles pour un jour donné.
+   *     parameters:
+   *       - in: path
+   *         name: day
+   *         required: true
+   *         description: Jour de la semaine (e.g., "lundi", "mardi").
+   *         schema:
+   *           type: string
+   *     responses:
+   *       200:
+   *         description: Liste des dépôts disponibles pour le jour spécifié.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: array
+   *               items:
+   *                 type: object
+   *       500:
+   *         description: Erreur lors de la récupération des dépôts.
+   */
+    app.get('/depots/jour/:day', async (req, res) => {
+      const { day } = req.params;
+      try {
+        const conn = await pool.getConnection();
+        const depots = await conn.query(
+          `SELECT * FROM Point_Depot WHERE FIND_IN_SET(?, Jour_Disponibilite)`,
+          [day]
+        );
+        conn.release();
+        res.json(depots);
+      } catch (error) {
+        console.error('Erreur lors de la récupération des dépôts pour le jour:', error);
+        res.status(500).json({ error: 'Erreur lors de la récupération des dépôts.' });
+      }
+    });
+  
+    /**
+ * @swagger
+ * /tours/{tourId}/schedule:
+ *   get:
+ *     summary: Récupérer le calendrier de livraison d'une tournée
+ *     description: Renvoie les dates de livraison pour une tournée spécifique selon la fréquence spécifiée.
+ *     parameters:
+ *       - in: path
+ *         name: tourId
+ *         required: true
+ *         description: ID de la tournée pour laquelle récupérer le calendrier.
+ *         schema:
+ *           type: integer
+ *       - in: query
+ *         name: frequency
+ *         required: true
+ *         description: Fréquence des livraisons (e.g., "quotidien", "hebdomadaire").
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des dates de livraison pour la tournée spécifiée.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   ID:
+ *                     type: integer
+ *                   TourID:
+ *                     type: integer
+ *                   DeliveryDate:
+ *                     type: string
+ *                     format: date
+ *                   Frequency:
+ *                     type: string
+ *                   IsHoliday:
+ *                     type: boolean
+ *       500:
+ *         description: Erreur lors de la récupération du calendrier.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Erreur lors de la récupération du calendrier.
+ */
+app.get('/tours/:tourId/schedule', async (req, res) => {
+  const { tourId } = req.params;
+  const { frequency } = req.query;
+  
+  try {
+    const conn = await pool.getConnection();
+    const schedules = await conn.query(
+      `SELECT * FROM DeliverySchedule 
+       WHERE TourID = ? AND Frequency = ?
+       ORDER BY DeliveryDate ASC`,
+      [tourId, frequency]
+    );
+    conn.release();
+    res.json(schedules);
+  } catch (error) {
+    console.error('Erreur lors de la récupération du calendrier:', error);
+    res.status(500).json({ error: 'Erreur lors de la récupération du calendrier.' });
+  }
+  });
 
   // register 
   /**
@@ -259,37 +594,58 @@
 
 
 
-  /**
+    /**
    * @swagger
-   * /depots:
-   *   get:
-   *     summary: Liste des dépôts
-   *     description: Renvoie tous les dépôts disponibles.
+   * /tours:
+   *   post:
+   *     summary: Créer une nouvelle tournée
+   *     description: Permet de créer une nouvelle tournée avec des informations de préparation, livraison, état et parcours.
+   *     requestBody:
+   *       required: true
+   *       content:
+   *         application/json:
+   *           schema:
+   *             type: object
+   *             properties:
+   *               jourPreparation:
+   *                 type: string
+   *                 format: date
+   *                 description: Date de préparation de la tournée (format YYYY-MM-DD).
+   *               jourLivraison:
+   *                 type: string
+   *                 format: date
+   *                 description: Date de livraison de la tournée (format YYYY-MM-DD).
+   *               etatTournee:
+   *                 type: string
+   *                 description: État de la tournée (e.g., "En cours", "Terminé").
+   *               parcours:
+   *                 type: string
+   *                 description: Parcours de la tournée.
    *     responses:
-   *       200:
-   *         description: Liste des dépôts.
+   *       201:
+   *         description: Tournée créée avec succès.
    *         content:
    *           application/json:
    *             schema:
-   *               type: array
-   *               items:
-   *                 type: object
+   *               type: object
+   *               properties:
+   *                 message:
+   *                   type: string
+   *                   example: Tournée créée avec succès.
+   *                 id:
+   *                   type: integer
+   *                   description: ID de la tournée nouvellement créée.
    *       500:
-   *         description: Erreur serveur.
+   *         description: Erreur lors de la création de la tournée.
+   *         content:
+   *           application/json:
+   *             schema:
+   *               type: object
+   *               properties:
+   *                 error:
+   *                   type: string
+   *                   example: Erreur lors de la création de la tournée.
    */
-  app.get('/depots', async (req, res) => {
-    try {
-      const conn = await pool.getConnection();
-      const depots = await conn.query('SELECT * FROM Point_Depot');
-      conn.release();
-      res.status(200).json(depots);
-    } catch (error) {
-      console.error('Erreur lors de la récupération des dépôts :', error);
-      res.status(500).json({ error: 'Erreur lors de la récupération des dépôts.' });
-    }
-  });
-
-  // creer tournee 
   app.post('/tours', async (req, res) => {
     const { jourPreparation, jourLivraison, etatTournee, parcours } = req.body;
     try {
@@ -306,137 +662,44 @@
     }
   });
 
-  /**
-   * @swagger
-   * /tours:
-   *   get:
-   *     summary: Liste des tournées
-   *     description: Renvoie toutes les tournées disponibles.
-   *     responses:
-   *       200:
-   *         description: Liste des tournées.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: array
-   *               items:
-   *                 type: object
-   *       500:
-   *         description: Erreur serveur.
-   */
-  app.get('/tours', async (req, res) => {
-    try {
-      const conn = await pool.getConnection();
-      const tours = await conn.query('SELECT * FROM Tournee');
-      conn.release();
-      res.json(tours);
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Erreur lors de la récupération des tournées.' });
-    }
-  });
+
+
+
+
 
 
   /**
-   * @swagger
-   * /tours/{id}:
-   *   get:
-   *     summary: Récupérer les détails d'une tournée spécifique
-   *     description: Renvoie les informations d'une tournée ainsi que les points associés, triés par ordre.
-   *     parameters:
-   *       - in: path
-   *         name: id
-   *         required: true
-   *         description: ID de la tournée à récupérer.
-   *         schema:
-   *           type: integer
-   *     responses:
-   *       200:
-   *         description: Détails de la tournée et liste des points.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 tournee:
-   *                   type: object
-   *                   description: Informations sur la tournée.
-   *                   properties:
-   *                     ID_Tournee:
-   *                       type: integer
-   *                     Jour_Preparation:
-   *                       type: string
-   *                       format: date
-   *                     Jour_Livraison:
-   *                       type: string
-   *                       format: date
-   *                     Etat_Tournee:
-   *                       type: string
-   *                     Parcours:
-   *                       type: string
-   *                 points:
-   *                   type: array
-   *                   description: Liste des points associés à la tournée.
-   *                   items:
-   *                     type: object
-   *                     properties:
-   *                       ID_Point_Depot:
-   *                         type: integer
-   *                       Nom:
-   *                         type: string
-   *                       Adresse:
-   *                         type: string
-   *                       Latitude:
-   *                         type: number
-   *                       Longitude:
-   *                         type: number
-   *       404:
-   *         description: Tournée non trouvée.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 error:
-   *                   type: string
-   *                   example: Tournée non trouvée.
-   *       500:
-   *         description: Erreur serveur.
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 error:
-   *                   type: string
-   *                   example: Erreur lors de la récupération de la tournée.
-   */
-
-  app.get('/tours/:id', async (req, res) => {
-    const { id } = req.params;
-    try {
-      const conn = await pool.getConnection();
-      const tournee = await conn.query('SELECT * FROM Tournee WHERE ID_Tournee = ?', [id]);
-
-      if (!tournee.length) {
-        conn.release();
-        return res.status(404).json({ error: 'Tournée non trouvée.' });
-      }
-
-      const points = await conn.query(
-        'SELECT pd.* FROM Tournee_Points tp JOIN Point_Depot pd ON tp.ID_Point_Depot = pd.ID_Point_Depot WHERE tp.ID_Tournee = ? ORDER BY tp.Ordre',
-        [id]
-      );
-      conn.release();
-
-      res.json({ tournee: tournee[0], points });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: 'Erreur lors de la récupération de la tournée.' });
-    }
-  });
-
-
+ * @swagger
+ * /tours/{id}/points:
+ *   post:
+ *     summary: Ajouter un point à une tournée
+ *     description: Permet d'ajouter un point de dépôt à une tournée existante avec un ordre spécifique.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de la tournée à laquelle le point doit être ajouté.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               pointId:
+ *                 type: integer
+ *                 description: ID du point de dépôt à ajouter.
+ *               ordre:
+ *                 type: integer
+ *                 description: Ordre du point dans la tournée.
+ *     responses:
+ *       201:
+ *         description: Point ajouté à la tournée avec succès.
+ *       500:
+ *         description: Erreur lors de l'ajout du point à la tournée.
+ */
   app.post('/tours/:id/points', async (req, res) => {
     const { id } = req.params;
     const { pointId, ordre } = req.body;
@@ -455,6 +718,61 @@
     }
   });
 
+
+  /**
+ * @swagger
+ * /tours/{tourId}/schedule:
+ *   post:
+ *     summary: Ajouter une date de livraison à une tournée
+ *     description: Permet d'ajouter une date spécifique, une fréquence et une indication si c'est un jour férié pour une tournée.
+ *     parameters:
+ *       - in: path
+ *         name: tourId
+ *         required: true
+ *         description: ID de la tournée à laquelle ajouter le calendrier.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               DeliveryDate:
+ *                 type: string
+ *                 format: date
+ *                 description: Date de livraison.
+ *               Frequency:
+ *                 type: string
+ *                 description: Fréquence de livraison.
+ *               IsHoliday:
+ *                 type: boolean
+ *                 description: Indique si c'est un jour férié.
+ *     responses:
+ *       201:
+ *         description: Date ajoutée avec succès.
+ *       500:
+ *         description: Erreur lors de l'ajout de la date.
+ */  
+  app.post('/tours/:tourId/schedule', async (req, res) => {
+    const { tourId } = req.params;
+    const { DeliveryDate, Frequency, IsHoliday} = req.body;
+    
+    try {
+      const conn = await pool.getConnection();
+      await conn.query(
+        `INSERT INTO DeliverySchedule (TourID, DeliveryDate, Frequency, IsHoliday) 
+         VALUES (?, ?, ?, ?)`,
+        [tourId, DeliveryDate, Frequency, IsHoliday]
+      );
+      conn.release();
+      res.status(201).json({ message: 'Date ajoutée avec succès' });
+    } catch (error) {
+      console.error('Erreur lors de l\'ajout de la date:', error);
+      res.status(500).json({ error: 'Erreur lors de l\'ajout de la date.' });
+    }
+  });
 
 
   /**
@@ -631,26 +949,31 @@
   });
 
 
-  app.post('/tours/:tourId/schedule', async (req, res) => {
-    const { tourId } = req.params;
-    const { DeliveryDate, Frequency, IsHoliday} = req.body;
-    
-    try {
-      const conn = await pool.getConnection();
-      await conn.query(
-        `INSERT INTO DeliverySchedule (TourID, DeliveryDate, Frequency, IsHoliday) 
-         VALUES (?, ?, ?, ?)`,
-        [tourId, DeliveryDate, Frequency, IsHoliday]
-      );
-      conn.release();
-      res.status(201).json({ message: 'Date ajoutée avec succès' });
-    } catch (error) {
-      console.error('Erreur lors de l\'ajout de la date:', error);
-      res.status(500).json({ error: 'Erreur lors de l\'ajout de la date.' });
-    }
-  });
-
-
+  /**
+ * @swagger
+ * /tours/{tourId}/schedule/{date}:
+ *   delete:
+ *     summary: Supprimer une date de livraison d'une tournée
+ *     description: Supprime une date de livraison spécifique associée à une tournée.
+ *     parameters:
+ *       - in: path
+ *         name: tourId
+ *         required: true
+ *         description: ID de la tournée.
+ *         schema:
+ *           type: integer
+ *       - in: path
+ *         name: date
+ *         required: true
+ *         description: Date de livraison à supprimer (format YYYY-MM-DD).
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Date supprimée avec succès.
+ *       500:
+ *         description: Erreur lors de la suppression de la date.
+ */
   app.delete('/tours/:tourId/schedule/:date', async (req, res) => {
     const { tourId, date } = req.params;
     
@@ -667,102 +990,6 @@
       res.status(500).json({ error: 'Erreur lors de la suppression de la date.' });
     }
   });
-
-app.get('/depots/jour/:day', async (req, res) => {
-  const { day } = req.params;
-  try {
-    const conn = await pool.getConnection();
-    const depots = await conn.query(
-      `SELECT * FROM Point_Depot WHERE FIND_IN_SET(?, Jour_Disponibilite)`,
-      [day]
-    );
-    conn.release();
-    res.json(depots);
-  } catch (error) {
-    console.error('Erreur lors de la récupération des dépôts pour le jour:', error);
-    res.status(500).json({ error: 'Erreur lors de la récupération des dépôts.' });
-  }
-});
-
-
-// Ajoutez cette route dans votre fichier server.js
-app.get('/tours/:tourId/schedule', async (req, res) => {
-  const { tourId } = req.params;
-  const { frequency } = req.query;
-  
-  try {
-    const conn = await pool.getConnection();
-    const schedules = await conn.query(
-      `SELECT * FROM DeliverySchedule 
-       WHERE TourID = ? AND Frequency = ?
-       ORDER BY DeliveryDate ASC`,
-      [tourId, frequency]
-    );
-    conn.release();
-    res.json(schedules);
-  } catch (error) {
-    console.error('Erreur lors de la récupération du calendrier:', error);
-    res.status(500).json({ error: 'Erreur lors de la récupération du calendrier.' });
-  }
-});
-
-app.post('/tours/generate', async (req, res) => {
-  const { tourDay, holidays, closureWeeks, frequency, basketsCount } = req.body;
-
-  try {
-    // Validation des données d'entrée
-    if (!tourDay || !frequency || !basketsCount) {
-      return res.status(400).json({ error: "Données manquantes : tourDay, frequency ou basketsCount" });
-    }
-
-    const schedule = [];
-    const startDate = new Date();
-    let currentDate = new Date(startDate);
-    let deliveriesRemaining = basketsCount;
-
-    // Boucle pour générer les livraisons
-    while (deliveriesRemaining > 0) {
-      // Passer à la semaine suivante
-      currentDate.setDate(currentDate.getDate() + 1);
-
-      // Vérifier si le jour correspond au jour de tournée
-      if (currentDate.toLocaleDateString('fr-FR', { weekday: 'long' }) !== tourDay) {
-        continue;
-      }
-
-      // Vérifier si c'est un jour férié ou une semaine de fermeture
-      const isoDate = currentDate.toISOString().split('T')[0];
-      const isHoliday = holidays.includes(isoDate);
-      const isClosureWeek = closureWeeks.some((week) => {
-        const [start, end] = week;
-        return new Date(start) <= currentDate && currentDate <= new Date(end);
-      });
-
-      if (isHoliday || isClosureWeek) {
-        continue; // Ignorer ce jour
-      }
-
-      // Ajouter la date au calendrier
-      schedule.push({
-        date: isoDate,
-        adjusted: false,
-      });
-
-      // Réduire le nombre de livraisons restantes
-      deliveriesRemaining--;
-
-      // Passer à la semaine suivante pour les fréquences bimensuelles
-      if (frequency === 'bimensuel') {
-        currentDate.setDate(currentDate.getDate() + 7);
-      }
-    }
-
-    res.status(200).json({ calendar: schedule });
-  } catch (error) {
-    console.error("Erreur lors de la génération du calendrier :", error);
-    res.status(500).json({ error: "Erreur serveur lors de la génération du calendrier." });
-  }
-});
 
 
   // Démarrer le serveur sur le port 4000
