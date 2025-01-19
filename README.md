@@ -7,7 +7,7 @@ Nous développons une Application web complexe en React et Node.js
 ## Authors
 
 - [@Kyriann](https://github.com/userisAsk/)
-- [@Adame](https://github.com/Adame/)
+- [@Adame](https://github.com/ov3rc0me)
 
 
 
