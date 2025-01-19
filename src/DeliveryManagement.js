@@ -208,7 +208,7 @@ const DeliveryManagement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 pt-16">
       <div className="container mx-auto p-4">
         <h1 className="text-3xl font-bold text-center mb-8">
           Gestion des Tournées de Livraison

@@ -9,7 +9,9 @@ function Header() {
   const location = useLocation();
 
   // Détecter si on est sur la page "DeliveryManagement"
-  const isDeliveryPage = location.pathname === '/delivery';
+  const HeaderBcPages = ['/delivery', '/calendrier', '/abonnement'];
+  const isDeliveryPage = HeaderBcPages.includes(location.pathname);
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,7 +33,7 @@ function Header() {
   return (
     <header
       className={`${
-        isDeliveryPage ? 'bg-gray-800 text-white' : 'bg-transparent text-white'
+        HeaderBcPages ? 'bg-gray-800 text-white' : 'bg-transparent text-white'
       } py-4 fixed w-full top-0 z-50 transition-transform ${
         hidden ? '-translate-y-full' : 'translate-y-0'
       }`}

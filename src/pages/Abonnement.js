@@ -106,7 +106,7 @@ const Abonnement = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center mt-32">
       {/* Barre de progression */}
       <div className="w-full max-w-3xl mb-4 px-4">
         <div className="flex justify-between text-sm text-gray-600 mb-1">
