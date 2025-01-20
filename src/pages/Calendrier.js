@@ -222,7 +222,7 @@ const DeliverySchedule = () => {
   const calendarDays = generateCalendarDays();
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 mt-32 bg-gray-100 shadow-lg rounded-lg">
+    <div className="w-full max-w-4xl mx-auto p-6 mt-32 bg-white shadow-lg rounded-lg">
       <div className="border-b pb-4 mb-6">
         <h2 className="text-2xl font-semibold flex items-center gap-2">
           <CalendarIcon className="w-6 h-6 text-blue-600" />

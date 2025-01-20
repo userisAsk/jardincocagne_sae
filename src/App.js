@@ -2,6 +2,7 @@ import logo from './logo.svg';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import './App.css';
+import "./index.css"
 import 'leaflet/dist/leaflet.css';
 import MapComponent from './MapComponent';
 import Header from './components/Header';

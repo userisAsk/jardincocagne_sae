@@ -5,6 +5,8 @@
   "private": true,
   "dependencies": {
     "@radix-ui/react-icons": "^1.3.2",
+    "@testing-library/react": "^16.2.0",
+    "@testing-library/user-event": "^13.5.0",
     "aos": "^2.3.4",
     "axios": "^1.7.9",
     "cra-template": "1.2.0",
@@ -14,19 +16,22 @@
     "leaflet": "^1.9.4",
     "leaflet-routing-machine": "^3.2.12",
     "lucide-react": "^0.473.0",
+    "msw": "^2.7.0",
     "react": "^19.0.0",
     "react-calendar": "^5.1.0",
     "react-datepicker": "^7.6.0",
     "react-dom": "^19.0.0",
     "react-leaflet": "^5.0.0",
-    "react-router-dom": "^7.1.1",
+    "react-router-dom": "^6.28.2",
     "react-scripts": "5.0.1",
     "web-vitals": "^4.2.4"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:custom": "jest",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -35,6 +40,7 @@
       "react-app/jest"
     ]
   },
+  "jest": {},
   "browserslist": {
     "production": [
       ">0.2%",
@@ -48,6 +54,14 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
+    "@testing-library/jest-dom": "^6.6.3",
+    "autoprefixer": "^10.4.20",
+    "babel-jest": "^29.7.0",
+    "jest": "^27.5.1",
+    "postcss": "^8.5.1",
     "tailwindcss": "^3.4.17"
   }
 }

@@ -842,6 +842,178 @@ app.get('/tours/:tourId/schedule', async (req, res) => {
     }
   });
 
+  /**
+ * @swagger
+ * /adherents/{id}:
+ *   put:
+ *     summary: Mettre à jour les informations d'un adhérent
+ *     description: Permet de mettre à jour les informations d'un adhérent spécifique, telles que le nom, l'email, le téléphone et l'adresse.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         description: ID de l'adhérent à mettre à jour.
+ *         schema:
+ *           type: integer
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 description: Nouveau nom de l'adhérent.
+ *               email:
+ *                 type: string
+ *                 description: Nouvel email de l'adhérent.
+ *               Telephone:
+ *                 type: string
+ *                 description: Nouveau numéro de téléphone.
+ *               Rue:
+ *                 type: string
+ *                 description: Nouvelle rue.
+ *               Code_Postal:
+ *                 type: string
+ *                 description: Nouveau code postal.
+ *               Ville:
+ *                 type: string
+ *                 description: Nouvelle ville.
+ *     responses:
+ *       200:
+ *         description: Adhérent mis à jour avec succès.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Informations mises à jour avec succès.
+ *       404:
+ *         description: Adhérent non trouvé.
+ *       500:
+ *         description: Erreur serveur.
+ */
+  app.put('/adherents/:id', async (req, res) => {
+    const { id } = req.params;
+    const updates = req.body;
+  
+    try {
+      const conn = await pool.getConnection();
+      await conn.beginTransaction();
+  
+      try {
+        // 1. Séparer les champs Adherent et Adresse
+        const adherentFields = ['name', 'email', 'Telephone'];
+        const addressFields = ['Rue', 'Code_Postal', 'Ville'];
+  
+        const adherentUpdates = {};
+        const addressUpdates = {};
+  
+        // Répartir les champs mis à jour
+        Object.keys(updates).forEach(key => {
+          if (adherentFields.includes(key)) {
+            adherentUpdates[key] = updates[key];
+          } else if (addressFields.includes(key)) {
+            addressUpdates[key] = updates[key];
+          }
+        });
+  
+        // 2. Mise à jour de l'Adherent si nécessaire
+        if (Object.keys(adherentUpdates).length > 0) {
+          const fields = Object.keys(adherentUpdates)
+            .map(key => `${key} = ?`)
+            .join(', ');
+          const values = [...Object.values(adherentUpdates), id];
+  
+          await conn.query(
+            `UPDATE Adherent SET ${fields} WHERE Id_adherent = ?`,
+            values
+          );
+        }
+  
+        // 3. Mise à jour ou création de l'Adresse si nécessaire
+        if (Object.keys(addressUpdates).length > 0) {
+          // Vérifier si une adresse existe
+          const [existingAddress] = await conn.query(
+            'SELECT ID_Adresse FROM Adresse WHERE ID_Adherent = ?',
+            [id]
+          );
+          
+          // Vérifiez si `existingAddress` est défini et non vide
+          if (existingAddress && existingAddress.length > 0) {
+            // Mise à jour uniquement des champs modifiés
+            const fields = Object.keys(addressUpdates)
+              .map(key => `${key} = ?`)
+              .join(', ');
+            const values = [...Object.values(addressUpdates), id];
+          
+            await conn.query(
+              `UPDATE Adresse SET ${fields} WHERE ID_Adherent = ?`,
+              values
+            );
+          } else {
+            // Création d'une nouvelle adresse avec les champs disponibles
+            const fields = Object.keys(addressUpdates);
+            const placeholders = fields.map(() => '?').join(', ');
+            const values = Object.values(addressUpdates);
+          
+            await conn.query(
+              `INSERT INTO Adresse (ID_Adherent, ${fields.join(', ')}) 
+               VALUES (?, ${placeholders})`,
+              [id, ...values]
+            );
+          }
+          
+        }
+  
+        // 4. Récupérer les données mises à jour et formater en JSON
+        const [updatedData] = await conn.query(`
+          SELECT 
+            a.Id_adherent, 
+            a.name, 
+            a.email, 
+            a.Telephone, 
+            JSON_OBJECT(
+              'Rue', adr.Rue,
+              'Code_Postal', adr.Code_Postal,
+              'Ville', adr.Ville
+            ) AS adresse
+          FROM Adherent a
+          LEFT JOIN Adresse adr ON a.Id_adherent = adr.ID_Adherent
+          WHERE a.Id_adherent = ?
+        `, [id]);
+  
+        await conn.commit();
+  
+        // Vérifiez que les données existent
+        if (!updatedData || updatedData.length === 0) {
+          return res.status(404).json({ error: 'Adhérent non trouvé après mise à jour.' });
+        }
+  
+        // Renvoyer les données en JSON
+        res.status(200).json(updatedData[0]);
+  
+      } catch (error) {
+        await conn.rollback();
+        throw error;
+      } finally {
+        conn.release();
+      }
+  
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour:', error);
+      res.status(500).json({ 
+        error: 'Erreur lors de la mise à jour des informations.',
+        details: error.message 
+      });
+    }
+  });
+  
+  
+
 
   /**
    * @swagger
