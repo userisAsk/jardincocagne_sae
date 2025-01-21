@@ -22,7 +22,7 @@ pour lancer le projet la première fois
 ```
 
 parfois l'application web peut mettre du temps a recharger si vous voulez palier a ce problème 2 solutions :
-- attendre et la page apparaitra
+- attendre et la page apparaitra ou relancer la page
 - relancer docker
 - refait la commande :
   ```bash
