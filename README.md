@@ -20,6 +20,13 @@ pour lancer le projet la première fois
 ```bash
   docker compose up --build -d
 ```
+se connecter sur le site : 
+- mail : gestionnaire2@gmail.com
+- mot de passe : dracofeu
+
+se connecter sur phpmyadmin : 
+- username : root
+- mot de passe : root
 
 parfois l'application web peut mettre du temps a recharger si vous voulez palier a ce problème 2 solutions :
 - attendre et la page apparaitra ou relancer la page
