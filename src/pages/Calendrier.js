@@ -232,11 +232,12 @@ const DeliverySchedule = () => {
 
       <div className="space-y-6">
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700" htmlFor='tournee'>
             Tournée
           </label>
           <div className="relative">
             <select
+              id='tournee'
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               value={selectedTour}
               onChange={(e) => setSelectedTour(e.target.value)}
@@ -254,11 +255,12 @@ const DeliverySchedule = () => {
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700" htmlFor='frequence'>
             Fréquence
           </label>
           <div className="relative">
             <select
+              id=''
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
               value={frequency}
               onChange={(e) => setFrequency(e.target.value)}

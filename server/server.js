@@ -591,7 +591,60 @@ app.get('/tours/:tourId/schedule', async (req, res) => {
     }
   });
 
+  /**
+ * @swagger
+ * /check-email:
+ *   post:
+ *     summary: Vérifier si un email existe
+ *     description: Vérifie si un email est déjà utilisé par un adhérent existant.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: Email à vérifier
+ *     responses:
+ *       200:
+ *         description: Vérification réussie
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 exists:
+ *                   type: boolean
+ *                   description: True si l'email existe déjà, false sinon
+ *       400:
+ *         description: Email manquant ou invalide
+ *       500:
+ *         description: Erreur serveur
+ */
+app.post('/check-email', async (req, res) => {
+  const { email } = req.body;
 
+  if (!email) {
+    return res.status(400).json({ error: 'Email requis.' });
+  }
+
+  try {
+    const conn = await pool.getConnection();
+    const result = await conn.query(
+      'SELECT COUNT(*) as count FROM Adherent WHERE email = ?',
+      [email]
+    );
+    conn.release();
+
+    const exists = result[0].count > 0;
+    res.json({ exists });
+  } catch (error) {
+    console.error('Erreur lors de la vérification de l\'email:', error);
+    res.status(500).json({ error: 'Erreur lors de la vérification de l\'email.' });
+  }
+});
 
 
     /**
