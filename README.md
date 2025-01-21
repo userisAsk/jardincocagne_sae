@@ -21,6 +21,14 @@ pour lancer le projet la première fois
   docker compose up --build -d
 ```
 
+parfois l'application web peut mettre du temps a recharger si vous voulez palier a ce problème 2 solutions :
+- attendre et la page apparaitra
+- relancer docker
+- refait la commande :
+  ```bash
+  docker compose up  -d
+```
+
 
 ## Documentation
 Documentation swagger pour y accéder soit vous pouvez cliquer sur le ien ci-dessous(local)
