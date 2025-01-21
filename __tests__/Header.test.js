@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen, fireEvent, act } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import Header from './components/Header';
-import { useAuth } from './context/AuthContext';
+import Header from '../src/components/Header';
+import { useAuth } from '../src/context/AuthContext';
 
 // Mock du context d'authentification
-jest.mock('./context/AuthContext', () => ({
+jest.mock('../src/context/AuthContext', () => ({
   useAuth: jest.fn()
 }));
 

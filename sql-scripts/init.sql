@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : mariadb:3306
--- Généré le : dim. 19 jan. 2025 à 11:36
+-- Généré le : mar. 21 jan. 2025 à 17:42
 -- Version du serveur : 10.9.8-MariaDB-1:10.9.8+maria~ubu2204
 -- Version de PHP : 8.2.8
 
@@ -78,12 +78,15 @@ INSERT INTO `Adherent` (`Id_adherent`, `email`, `password`, `name`, `created_at`
 (6, 'dqdqddqd@gmail.com', '$2b$10$sNS8TdAI4zCBDV9eF/W4jOgjQKK8ZoJ0YTPwY/nDSruXAV79I7voG', 'ae', '2024-12-20 18:09:15', 0, NULL, NULL, NULL),
 (7, 'cc@gmail.com', '$2b$10$0p9U6cx9FAljw9N.3SR/Z.9dwVduWDbY8qANTK6SFVzySDK0hFUaS', 'coucouc', '2024-12-20 18:24:27', 0, NULL, NULL, NULL),
 (8, 'qdqdqd@gmail.com', '$2b$10$sb/znZ6UJKlMKHUdDDhev.xVWVRJZdkll1UH6k0pvTpknGt6PigFq', 'ask', '2024-12-29 22:19:53', 0, NULL, NULL, NULL),
-(9, 'kyriann.paille@gmail.com', NULL, 'Kyriann PAILLE', '2024-12-30 00:19:22', 0, NULL, NULL, NULL),
-(10, 'sss@gmail.com', '$2b$10$K3ql5L2rGvifY0uzvQvHz.a5d8UmNgNnNCAe7crBYyHxLbHFRYBvm', 'ask', '2024-12-30 02:12:06', 1, NULL, NULL, NULL),
+(9, 'kyriann.paille@gmail.com', NULL, 'Kyriann PAILLE', '2024-12-30 00:19:22', 0, NULL, NULL, 2),
+(10, 'askv1@gmail.com', '$2b$10$K3ql5L2rGvifY0uzvQvHz.a5d8UmNgNnNCAe7crBYyHxLbHFRYBvm', 'ask', '2024-12-30 02:12:06', 1, '987654321', NULL, NULL),
 (11, 'zouzoudi22@gmail.com', NULL, 'Zouzoudi', '2025-01-05 22:42:35', 0, NULL, NULL, NULL),
 (12, 'kqdkdqkdkqd@gmail.com', '$2b$10$TOTPK/o8LbqEelD/SZBre.8VKnr29bqcQB8GZjqyx2OlykzhHSXsW', 'dqdqkd', '2025-01-09 01:09:05', 0, NULL, NULL, NULL),
 (13, 'dqjjdqjdq@gmail.com', '$2b$10$oQsrB7nAy/U4uMIKEum.m.p9YLzxQzpJFQCWJ9GHXsydFHJeem6OW', 'qkdqjk', '2025-01-09 01:15:16', 0, NULL, NULL, NULL),
-(14, 'rodriguez@gmail.com', '$2a$10$2dounwUu67xwIBaW5U2UMe22cmmay9O2YZ3U6Dk7j.p5Ssx6w8mXW', 'alexis', '2025-01-13 00:10:12', 0, '0645237688', NULL, 1);
+(14, 'rodriguez@gmail.com', '$2a$10$2dounwUu67xwIBaW5U2UMe22cmmay9O2YZ3U6Dk7j.p5Ssx6w8mXW', 'alexis', '2025-01-13 00:10:12', 0, '0645237688', NULL, 1),
+(15, 'gestionnaire@gmail.com', '$2a$10$b/EkR70ImHe7V7PpIGgGvOPjSyDj6B.c.aEKBqUgfcPQ81bRyZCfK', 'gestionnaire', '2025-01-21 08:38:13', 0, NULL, NULL, NULL),
+(16, 'gestionnaire2@gmail.com', '$2a$10$dpUxkHVxMeGZ1CEEeFwQfuj2difBochquJN8tq3ut87GJO.b08Lo.', 'gestio', '2025-01-21 08:46:17', 0, NULL, NULL, NULL),
+(17, 'svp@gmail.com', '$2a$10$t5mTJ51Bh2yaq79s2g6ckuu3Z/HO0O60DCAjW/Gh1ioxeVd/Tz4gm', 'svp', '2025-01-21 08:59:36', 0, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -104,7 +107,9 @@ CREATE TABLE `Adresse` (
 --
 
 INSERT INTO `Adresse` (`ID_Adresse`, `Rue`, `Code_Postal`, `Ville`, `ID_Adherent`) VALUES
-(1, '10 Rue des Lilas', '75001', 'Paris', 14);
+(1, '10 Rue des Lilas', '75001', 'Paris', 14),
+(2, 'dz', '1231', 'BD', 10),
+(3, '20 rue des Lilas', '75001', 'Lyon', 10);
 
 -- --------------------------------------------------------
 
@@ -149,9 +154,11 @@ CREATE TABLE `DeliverySchedule` (
 --
 
 INSERT INTO `DeliverySchedule` (`ScheduleID`, `TourID`, `DeliveryDate`, `Frequency`, `IsHoliday`) VALUES
-(1, 1, '2025-01-20', 'Hebdomadaire', 0),
-(2, 2, '2025-01-20', 'Hebdomadaire', 0),
-(6, 1, '2025-01-15', 'Hebdomadaire', 0);
+(16, 1, '2025-01-21', 'Hebdomadaire', 0),
+(18, 1, '2025-01-15', 'Hebdomadaire', 0),
+(20, 1, '2025-01-07', 'Hebdomadaire', 0),
+(21, 1, '2025-01-13', 'Hebdomadaire', 0),
+(22, 1, '2025-01-08', 'Hebdomadaire', 0);
 
 -- --------------------------------------------------------
 
@@ -283,10 +290,9 @@ CREATE TABLE `Tournee_Points` (
 --
 
 INSERT INTO `Tournee_Points` (`ID_Tournee`, `ID_Point_Depot`, `Ordre`) VALUES
-(1, 1, 1),
-(1, 22, 3),
-(1, 24, 5),
-(1, 25, 1),
+(1, 31, 2),
+(1, 37, 6),
+(1, 38, 3),
 (2, 2, 4),
 (2, 35, 5),
 (3, 1, 2),
@@ -382,13 +388,13 @@ ALTER TABLE `Abonnement`
 -- AUTO_INCREMENT pour la table `Adherent`
 --
 ALTER TABLE `Adherent`
-  MODIFY `Id_adherent` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `Id_adherent` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT pour la table `Adresse`
 --
 ALTER TABLE `Adresse`
-  MODIFY `ID_Adresse` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `ID_Adresse` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `Commande`
@@ -400,7 +406,7 @@ ALTER TABLE `Commande`
 -- AUTO_INCREMENT pour la table `DeliverySchedule`
 --
 ALTER TABLE `DeliverySchedule`
-  MODIFY `ScheduleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `ScheduleID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT pour la table `Document`

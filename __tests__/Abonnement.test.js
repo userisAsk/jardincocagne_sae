@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import '@testing-library/jest-dom';
-import Abonnement from "./pages/Abonnement";
+import Abonnement from "../src/pages/Abonnement";
 // Mock fetch pour les données de dépôt
 global.fetch = jest.fn(() =>
   Promise.resolve({

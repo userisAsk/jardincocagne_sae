@@ -26,7 +26,7 @@ jest.mock('date-fns/locale', () => ({
 }));
 
 // Importer le composant après les mocks
-import DeliverySchedule from './pages/Calendrier';
+import DeliverySchedule from '../src/pages/Calendrier';
 
 // Mock de fetch
 const mockFetch = jest.fn();
