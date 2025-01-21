@@ -1,21 +1,20 @@
-// DeliveryManagement.js
 import React, { useState, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Tooltip, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 import L from "leaflet";
 import "leaflet-routing-machine";
-import { ArrowRight, MapPin, Truck, ChevronLeft, ChevronRight } from "lucide-react"; 
+import { ArrowRight, MapPin, Truck, ChevronLeft, ChevronRight, Plus, Trash2 } from "lucide-react";
 
 // Fix des icônes Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
-  iconUrl: require("leaflet/dist/images/marker-icon.png"),
-  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+  iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png"
 });
 
-// Composant pour le chargement
+// Composant Loading
 const Loading = () => (
   <div className="fixed inset-0 bg-black/25 flex items-center justify-center">
     <div className="bg-white p-4 rounded-lg shadow-lg">
@@ -25,7 +24,7 @@ const Loading = () => (
   </div>
 );
 
-// Composant RoutingMachine (inchangé)
+// Composant RoutingMachine
 const RoutingMachine = ({ points, color, setRouteInstructions, setTotalTime, setTotalDistance }) => {
   const map = useMap();
   const routingControlRef = useRef(null);
@@ -33,7 +32,6 @@ const RoutingMachine = ({ points, color, setRouteInstructions, setTotalTime, set
   useEffect(() => {
     if (!map) return;
 
-    // Fonction de nettoyage
     const cleanup = () => {
       if (routingControlRef.current) {
         try {
@@ -47,7 +45,6 @@ const RoutingMachine = ({ points, color, setRouteInstructions, setTotalTime, set
       }
     };
 
-    // Nettoyer les couches existantes sur la carte
     const cleanupLayers = () => {
       map.eachLayer((layer) => {
         if (layer.options && layer.options.pane === "overlayPane") {
@@ -60,9 +57,8 @@ const RoutingMachine = ({ points, color, setRouteInstructions, setTotalTime, set
     cleanup();
     cleanupLayers();
 
-    // Vérifier les points
     if (!points || points.length < 2) {
-      return cleanup; // Pas assez de points pour afficher une route
+      return cleanup;
     }
 
     const waypoints = points
@@ -70,53 +66,46 @@ const RoutingMachine = ({ points, color, setRouteInstructions, setTotalTime, set
       .map(point => L.latLng(point.Latitude, point.Longitude));
 
     if (waypoints.length < 2) {
-      return cleanup; // Toujours pas assez de waypoints valides
+      return cleanup;
     }
 
-    // Ajouter le contrôle de routage
-    try {
-      routingControlRef.current = L.Routing.control({
-        waypoints,
-        lineOptions: {
-          styles: [{ color, opacity: 0.8, weight: 4 }],
-        },
-        router: L.Routing.osrmv1({
-          serviceUrl: "https://router.project-osrm.org/route/v1",
-        }),
-        addWaypoints: false,
-        draggableWaypoints: false,
-        fitSelectedRoutes: true,
-        showAlternatives: false,
-        createMarker: () => null,
-      })
-        .on("routesfound", (e) => {
-          const route = e.routes[0];
-          if (route) {
-            const instructions = route.instructions.map((instruction) => ({
-              text: instruction.text,
-              distance: instruction.distance,
-              time: instruction.time,
-            }));
-            setRouteInstructions(instructions);
-            setTotalTime(Math.round(route.summary.totalTime / 60));
-            setTotalDistance(route.summary.totalDistance / 1000);
-          }
-        });
+    routingControlRef.current = L.Routing.control({
+      waypoints,
+      lineOptions: {
+        styles: [{ color, opacity: 0.8, weight: 4 }]
+      },
+      router: L.Routing.osrmv1({
+        serviceUrl: "https://router.project-osrm.org/route/v1"
+      }),
+      addWaypoints: false,
+      draggableWaypoints: false,
+      fitSelectedRoutes: true,
+      showAlternatives: false,
+      createMarker: () => null
+    })
+      .on("routesfound", (e) => {
+        const route = e.routes[0];
+        if (route) {
+          const instructions = route.instructions.map((instruction) => ({
+            text: instruction.text,
+            distance: instruction.distance,
+            time: instruction.time
+          }));
+          setRouteInstructions(instructions);
+          setTotalTime(Math.round(route.summary.totalTime / 60));
+          setTotalDistance(route.summary.totalDistance / 1000);
+        }
+      });
 
-      routingControlRef.current.addTo(map);
-    } catch (error) {
-      console.error("Erreur lors de la création du contrôle de routage :", error);
-    }
+    routingControlRef.current.addTo(map);
 
-    // Cleanup à la fin
     return cleanup;
   }, [map, points, color, setRouteInstructions, setTotalTime, setTotalDistance]);
 
   return null;
 };
 
-
-// Composant FitBounds (inchangé)
+// Composant FitBounds
 const FitBounds = ({ points }) => {
   const map = useMap();
 
@@ -134,8 +123,26 @@ const FitBounds = ({ points }) => {
   return null;
 };
 
+const ConfirmDialog = ({ message, onConfirm, onCancel }) => {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center"  style={{ zIndex: 9999 }}>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96"  style={{ zIndex: 10000 }}>
+        <p className="text-lg mb-4">{message}</p>
+        <div className="flex justify-end gap-4">
+          <button onClick={onCancel} className="bg-gray-300 px-4 py-2 rounded-md">Annuler</button>
+          <button onClick={onConfirm} className="bg-red-500 text-white px-4 py-2 rounded-md">Confirmer</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
+
 // Composant principal
 const DeliveryManagement = () => {
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [confirmCallback, setConfirmCallback] = useState(null);
   const [tours, setTours] = useState([]);
   const [filteredTours, setFilteredTours] = useState([]);
   const [deliveryDate, setDeliveryDate] = useState("");
@@ -147,38 +154,52 @@ const DeliveryManagement = () => {
   const [currentColor, setCurrentColor] = useState("#2563eb");
   const [mapKey, setMapKey] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [allDepots, setAllDepots] = useState([]);
+  const [selectedDepot, setSelectedDepot] = useState("");
+  const [showInstructions, setShowInstructions] = useState(true);
 
   const tourColors = {
     "Mardi": "#2563eb",
     "Mercredi": "#059669",
-    "Vendredi": "#dc2626",
+    "Vendredi": "#dc2626"
   };
 
+  // Fetch initial data
   useEffect(() => {
-    const fetchTours = async () => {
+    const fetchInitialData = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://localhost:4000/tours");
-        const data = await response.json();
-        setTours(data);
-        setFilteredTours(data);
+        const [toursResponse, depotsResponse] = await Promise.all([
+          fetch("http://localhost:4000/tours"),
+          fetch("http://localhost:4000/depots")
+        ]);
+        
+        const toursData = await toursResponse.json();
+        const depotsData = await depotsResponse.json();
+        
+        setTours(toursData);
+        setFilteredTours(toursData);
+        setAllDepots(depotsData);
       } catch (error) {
-        console.error("Erreur lors de la récupération des tournées:", error);
+        console.error("Erreur lors de la récupération des données:", error);
+        alert("Erreur lors du chargement des données");
       }
       setLoading(false);
     };
-    fetchTours();
+
+    fetchInitialData();
   }, []);
 
+  // Filter tours based on date
   useEffect(() => {
     if (deliveryDate) {
-      const filtered = tours.filter((tour) => tour.Jour_Livraison.startsWith(deliveryDate));
-      setFilteredTours(filtered);
+      setFilteredTours(tours.filter((tour) => tour.Jour_Livraison.startsWith(deliveryDate)));
     } else {
       setFilteredTours(tours);
     }
   }, [deliveryDate, tours]);
 
+  // Fetch tour details when selected
   useEffect(() => {
     const fetchTourDetails = async () => {
       if (!selectedTourId) return;
@@ -193,9 +214,11 @@ const DeliveryManagement = () => {
         }
       } catch (error) {
         console.error("Erreur lors de la récupération des points:", error);
+        alert("Erreur lors du chargement des points de la tournée");
       }
       setLoading(false);
     };
+
     fetchTourDetails();
   }, [selectedTourId]);
 
@@ -205,6 +228,80 @@ const DeliveryManagement = () => {
     setRouteInstructions([]);
     setTotalTime(0);
     setTotalDistance(0);
+    setSelectedDepot("");
+  };
+
+
+
+  const handleAddDepot = async () => {
+    if (!selectedDepot || !selectedTourId) {
+      alert("Veuillez sélectionner un dépôt");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const ordre = points.length + 1;
+      await fetch(`http://localhost:4000/tours/${selectedTourId}/points`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pointId: selectedDepot, ordre })
+      });
+
+      const response = await fetch(`http://localhost:4000/tours/${selectedTourId}`);
+      const data = await response.json();
+      if (data.points) {
+        setPoints(data.points);
+        setMapKey((prev) => prev + 1);
+        setSelectedDepot("");
+      }
+    } catch (error) {
+      console.error("Erreur lors de l'ajout du point:", error);
+      alert("Erreur lors de l'ajout du point");
+    }
+    setLoading(false);
+  };
+
+  const handleDeletePoint = async (pointId) => {
+    setConfirmCallback(() => async () => {
+      setLoading(true);
+      try {
+        await fetch(`http://localhost:4000/tours/${selectedTourId}/points/${pointId}`, {
+          method: "DELETE"
+        });
+
+        const response = await fetch(`http://localhost:4000/tours/${selectedTourId}`);
+        const data = await response.json();
+        if (data.points) {
+          setPoints(data.points);
+          setMapKey((prev) => prev + 1);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la suppression du point:", error);
+        alert("Erreur lors de la suppression du point");
+      } finally {
+        setLoading(false);
+        setShowConfirmDialog(false); 
+        setConfirmCallback(null);
+      }
+    });
+
+    setShowConfirmDialog(true);
+  };
+
+  const handleCancelConfirm = () => {
+    setShowConfirmDialog(false);
+    setConfirmCallback(null);
+  };
+
+  const getInstructionIcon = (text) => {
+    const lowerText = text.toLowerCase();
+    if (lowerText.includes("turn right")) return ChevronRight;
+    if (lowerText.includes("turn left")) return ChevronLeft;
+    if (lowerText.includes("keep right")) return ArrowRight;
+    if (lowerText.includes("keep left")) return ChevronLeft;
+    if (lowerText.includes("merge")) return Truck;
+    return MapPin;
   };
 
   return (
@@ -218,8 +315,9 @@ const DeliveryManagement = () => {
 
         <div className="flex flex-col md:flex-row gap-4">
           {/* Sidebar */}
-          <div className="w-full md:w-1/4 bg-white rounded-lg shadow p-4">
-            <div className="mb-6">
+          <div className="w-full md:w-1/4 space-y-4">
+            {/* Date Filter */}
+            <div className="bg-white rounded-lg shadow p-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Date de livraison
               </label>
@@ -231,131 +329,221 @@ const DeliveryManagement = () => {
               />
             </div>
 
-            <div className="space-y-2">
-              <h2 className="font-semibold mb-4">Tournées disponibles</h2>
-              {filteredTours.map((tour) => (
-                <button
-                  key={tour.ID_Tournee}
-                  onClick={() => handleSelectTour(tour)}
-                  className={`w-full p-3 text-left rounded-md transition-all ${
-                    selectedTourId === tour.ID_Tournee
-                      ? "bg-blue-50 border-2 border-blue-500"
-                      : "border hover:bg-gray-50"
-                  }`}
-                  style={{
-                    borderLeftWidth: "4px",
-                    borderLeftColor: tourColors[tour.Parcours] || "#000"
-                  }}
-                >
-                  <div className="font-medium">{tour.Parcours}</div>
-                  <div className="text-sm text-gray-500">
-                    {new Date(tour.Jour_Livraison).toLocaleDateString()}
+            {/* Point Management */}
+            {selectedTourId && (
+              <div className="bg-white rounded-lg shadow p-4">
+                <h3 className="font-medium mb-4">Gestion des points</h3>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Sélectionner un dépôt
+                    </label>
+                    <select
+                      value={selectedDepot}
+                      onChange={(e) => setSelectedDepot(e.target.value)}
+                      className="w-full p-2 border rounded-md"
+                    >
+                      <option value="">Choisir un dépôt</option>
+                      {allDepots.map((depot) => (
+                        <option key={depot.ID_Point_Depot} value={depot.ID_Point_Depot}>
+                          {depot.Nom}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                </button>
-              ))}
+                  <button
+                    onClick={handleAddDepot}
+                    className="w-full flex items-center justify-center gap-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition-colors"
+                    disabled={!selectedDepot}
+                  >
+                    <Plus size={16} />
+                    Ajouter le point
+                  </button>
+                  
+                  {points.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="font-medium mb-2">Points de la tournée</h4>
+                      <div className="space-y-2">
+                        {points.map((point, idx) => (
+                          <div
+                            key={point.ID_Point_Depot}
+                            className="flex items-center justify-between p-2 border rounded-md"
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className="w-6 h-6 flex items-center justify-center bg-blue-100 rounded-full text-sm">
+                                {idx + 1}
+                              </span>
+                              {point.Nom}
+                            </span>
+                            <button
+                              onClick={() => handleDeletePoint(point.ID_Point_Depot)}
+                              className="text-red-500 hover:text-red-700 p-1"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Tours List */}
+            <div className="bg-white rounded-lg shadow p-4">
+              <h2 className="font-medium mb-4">Tournées disponibles</h2>
+              <div className="space-y-2">
+                {filteredTours.map((tour) => (
+                  <button
+                    key={tour.ID_Tournee}
+                    onClick={() => handleSelectTour(tour)}
+                    className={`w-full p-3 text-left rounded-md transition-all ${
+                      selectedTourId === tour.ID_Tournee
+                        ? "bg-blue-50 border-2 border-blue-500"
+                        : "border hover:bg-gray-50"
+                    }`}
+                    style={{
+                      borderLeftWidth: "4px",
+                      borderLeftColor: tourColors[tour.Parcours] || "#000"
+                    }}
+                  >
+                    <div className="font-medium">{tour.Parcours}</div>
+                    <div className="text-sm text-gray-500">
+                      {new Date(tour.Jour_Livraison).toLocaleDateString()}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
-          {/* Map and Info */}
-          <div className="flex flex-col w-full md:w-3/4">
+          {/* Main Content */}
+          <div className="flex flex-col w-full md:w-3/4 space-y-4">
             {selectedTourId ? (
               <>
-                <div className="h-[600px] bg-white rounded-lg shadow overflow-hidden">
-                  <MapContainer
-                    key={mapKey}
-                    center={[46.603354, 1.888334]}
-                    zoom={5}
-                    className="h-full w-full"
-                  >
-                    <TileLayer
-                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    />
-                    {points.map((point, idx) => (
-                      <Marker
-                        key={`${point.Latitude}-${point.Longitude}-${idx}`}
-                        position={[point.Latitude, point.Longitude]}
-                        icon={L.divIcon({
-                          className: "custom-icon",
-                          html: `<div style="background-color: ${currentColor}; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; color: white; font-weight: bold;">${idx + 1}</div>`,
-                        })}
-                      >
-                        <Tooltip permanent direction="top" offset={[0, -20]}>
-                          <span>{point.Nom}</span>
-                        </Tooltip>
-                      </Marker>
-                    ))}
-                    {points.length >= 2 && (
-                      <RoutingMachine
-                        points={points}
-                        color={currentColor}
-                        setRouteInstructions={setRouteInstructions}
-                        setTotalTime={setTotalTime}
-                        setTotalDistance={setTotalDistance}
+                {/* Map */}
+                <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+                  <div className="h-[600px]">
+                    <MapContainer
+                      key={mapKey}
+                      center={[46.603354, 1.888334]}
+                      zoom={5}
+                      className="h-full w-full"
+                    >
+                      <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                       />
-                    )}
-                    <FitBounds points={points} />
-                  </MapContainer>
+                      {points.map((point, idx) => (
+                        <Marker
+                          key={`${point.Latitude}-${point.Longitude}-${idx}`}
+                          position={[point.Latitude, point.Longitude]}
+                          icon={L.divIcon({
+                            className: "custom-icon",
+                            html: `<div style="background-color: ${currentColor}; width: 24px; height: 24px; border-radius: 50%; text-align: center; line-height: 24px; color: white; font-weight: bold;">${idx + 1}</div>`,
+                          })}
+                        >
+                          <Tooltip permanent direction="top" offset={[0, -20]}>
+                            <span>{point.Nom}</span>
+                          </Tooltip>
+                        </Marker>
+                      ))}
+                      {points.length >= 2 && (
+                        <RoutingMachine
+                          points={points}
+                          color={currentColor}
+                          setRouteInstructions={setRouteInstructions}
+                          setTotalTime={setTotalTime}
+                          setTotalDistance={setTotalDistance}
+                        />
+                      )}
+                      <FitBounds points={points} />
+                    </MapContainer>
+                  </div>
                 </div>
 
                 {/* Route Information */}
                 {(totalTime > 0 || totalDistance > 0) && (
-                  <div className="mt-4 bg-white rounded-lg shadow p-4">
-                    <h3 className="text-lg font-semibold mb-4">Informations de la tournée</h3>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <span className="text-gray-600">Temps estimé :</span>
-                        <div className="text-xl font-bold">{Math.round(totalTime)} minutes</div>
+                  <div className="bg-white rounded-lg shadow-lg p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-lg font-semibold">Informations de la tournée</h3>
+                      <button
+                        onClick={() => setShowInstructions(!showInstructions)}
+                        className="text-blue-500 hover:text-blue-700"
+                      >
+                        {showInstructions ? "Masquer les instructions" : "Afficher les instructions"}
+                      </button>
+                    </div>
+
+                    {/* Summary Stats */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="text-gray-600 mb-1">Temps estimé</div>
+                        <div className="text-2xl font-bold">
+                          {Math.floor(totalTime / 60)}h {totalTime % 60}min
+                        </div>
                       </div>
-                      <div>
-                        <span className="text-gray-600">Distance totale :</span>
-                        <div className="text-xl font-bold">{totalDistance.toFixed(1)} km</div>
+                      <div className="bg-gray-50 p-4 rounded-lg">
+                        <div className="text-gray-600 mb-1">Distance totale</div>
+                        <div className="text-2xl font-bold">
+                          {totalDistance.toFixed(1)} km
+                        </div>
                       </div>
                     </div>
-                    {routeInstructions.length > 0 && (
-  <div>
-    <h4 className="font-medium mb-2">Instructions :</h4>
-    <ul className="space-y-2">
-      {routeInstructions.map((instruction, idx) => {
-        let Icon;
-        const lowerText = instruction.text.toLowerCase();
 
-            // Déterminer l'icône en fonction du texte
-            if (lowerText.includes("turn right")) {
-              Icon = ChevronRight; // Flèche à droite
-            } else if (lowerText.includes("turn left")) {
-              Icon = ChevronLeft; // Flèche à gauche
-            } else if (lowerText.includes("keep right")) {
-              Icon = ArrowRight; // Flèche droite pour "garder à droite"
-            } else if (lowerText.includes("keep left")) {
-              Icon = ChevronLeft; // Flèche gauche pour "garder à gauche"
-            } else if (lowerText.includes("merge")) {
-              Icon = Truck; // Camion pour "fusionner sur une voie"
-            } else {
-              Icon = MapPin; // Épingle par défaut
-            }
-
-            return (
-              <li key={idx} className="flex items-center text-sm text-gray-700 space-x-2">
-                <Icon className="w-4 h-4 text-blue-500" /> {/* Affiche l'icône déterminée */}
-                <span>{instruction.text}</span>
-                <span className="ml-auto text-xs text-gray-500">
-                  ({Math.round(instruction.distance)}m)
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
-    )}
+                    {/* Route Instructions */}
+                    {showInstructions && routeInstructions.length > 0 && (
+                      <div className="border-t pt-4">
+                        <h4 className="font-medium mb-4">Instructions de route :</h4>
+                        <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
+                          {routeInstructions.map((instruction, idx) => {
+                            const Icon = getInstructionIcon(instruction.text);
+                            return (
+                              <div
+                                key={idx}
+                                className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg"
+                              >
+                                <div className="flex-shrink-0">
+                                  <Icon 
+                                    className="w-5 h-5 text-blue-500" 
+                                  />
+                                </div>
+                                <div className="flex-grow">
+                                  <span className="text-gray-800">{instruction.text}</span>
+                                </div>
+                                <div className="flex-shrink-0 text-sm text-gray-500">
+                                  {instruction.distance < 1000 
+                                    ? `${Math.round(instruction.distance)}m`
+                                    : `${(instruction.distance / 1000).toFixed(1)}km`
+                                  }
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </>
             ) : (
-              <div className="h-[600px] bg-white rounded-lg shadow flex items-center justify-center">
-                <p className="text-gray-500">Sélectionnez une tournée pour afficher la carte</p>
+              <div className="h-[600px] bg-white rounded-lg shadow-lg flex items-center justify-center">
+                <div className="text-center">
+                  <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500">
+                    Sélectionnez une tournée pour afficher la carte
+                  </p>
+                </div>
               </div>
             )}
+             {showConfirmDialog && (
+    <ConfirmDialog
+      message="Êtes-vous sûr de vouloir supprimer ce point ?"
+      onConfirm={confirmCallback}
+      onCancel={handleCancelConfirm}
+    />
+  )}
           </div>
         </div>
       </div>
