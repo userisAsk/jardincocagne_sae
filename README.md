@@ -32,3 +32,14 @@ ou pour y aller manuellement taper dans votre navigatueur  la commande suivante
 ```bash
   http://localhost:4000/api-docs
 ```
+
+## lancement Test unitaire
+
+pour lancer le projet la première fois 
+
+- aller a la racine du projet
+```bash
+  npm test
+```
+
+
