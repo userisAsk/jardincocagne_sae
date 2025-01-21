@@ -116,10 +116,8 @@ function Login() {
         <img src={MyImage} alt="Illustration" className="w-3/4 max-w-sm mb-6" />
         <h2 className="text-3xl font-bold mb-4">Découvrez les avantages de notre plateforme</h2>
         <p className="text-gray-300 text-sm">
-          Rejoignez des milliers d'utilisateurs qui utilisent notre plateforme pour gérer et créer des projets
-          collaboratifs.
+          Rejoignez des milliers d'utilisateurs qui utilisent notre plateforme 
         </p>
-        <p className="text-gray-300 text-sm mt-2">+15.7k utilisateurs satisfaits.</p>
       </div>
     </div>
   );
