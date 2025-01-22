@@ -55,5 +55,9 @@ pour lancer le projet la première fois
 ```bash
   npm test
 ```
+si vous ne parvenez pas a lancer les tests il faut mettre cette commande  : 
+```bash
+npm install --save-dev identity-obj-proxy
+```
 
 
