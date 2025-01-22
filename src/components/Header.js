@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import logo from "../assets/cocagne-vert.png";
 
 function Header() {
-  const { isAuthenticated, logout, user } = useAuth(); // Gestion de l'authentification
+  const { isAuthenticated, logout } = useAuth();
   const [lastScrollY, setLastScrollY] = useState(0);
   const [hidden, setHidden] = useState(false);
   const location = useLocation();
 
-  // Détecter si on est sur la page "DeliveryManagement"
-  const HeaderBcPages = ['/delivery', '/calendrier', '/abonnement', 'profile'];
+  const HeaderBcPages = ['/delivery', '/calendrier', '/abonnement', '/profile'];
   const isHeaderbcPage = HeaderBcPages.includes(location.pathname);
-
-
+  
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > lastScrollY && window.scrollY > 100) {
@@ -24,7 +23,7 @@ function Header() {
     };
 
     window.addEventListener('scroll', handleScroll);
-
+    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
@@ -39,12 +38,11 @@ function Header() {
       }`}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
-        {/* Logo */}
-        <div className="flex items-center">
+        <div className="flex items-center space-x-2">
+          <img src={logo} alt="logo" className="h-10 w-10" />
           <h1 className="text-2xl font-bold">Jardin de Cocagne</h1>
         </div>
 
-        {/* Navigation */}
         <nav>
           <ul className="flex space-x-5">
             <li>
@@ -52,14 +50,14 @@ function Header() {
                 Accueil
               </a>
             </li>
-              <li>
-                <a href="/delivery" className="hover:text-blue-400">
-                  Créer tournée livraison
-                </a>
-              </li>
+            <li>
+              <a href="/delivery" className="hover:text-blue-400">
+                Créer tournée livraison
+              </a>
+            </li>
             <li>
               <a href="/calendrier" className="hover:text-blue-400">
-                Calendrier
+                Créer un Calendrier
               </a>
             </li>
             <li>
@@ -70,19 +68,15 @@ function Header() {
           </ul>
         </nav>
 
-        {/* Boutons utilisateur */}
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              {/* Lien vers le profil */}
               <a
                 href="/profile"
                 className="text-white hover:text-blue-400"
               >
                 Mon compte
               </a>
-
-              {/* Bouton déconnexion */}
               <button
                 onClick={logout}
                 className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
@@ -92,14 +86,11 @@ function Header() {
             </>
           ) : (
             <>
-              {/* Bouton connexion */}
               <a href="/login">
                 <button className="bg-white text-[#68956b] py-2 px-4 rounded-full transition duration-300 ease-in-out hover:bg-[#68956b] hover:text-white">
                   Connexion
                 </button>
               </a>
-
-              {/* Bouton créer un compte */}
               <a href="/register">
                 <button className="bg-white text-[#68956b] py-2 px-4 rounded-full transition duration-300 ease-in-out hover:bg-[#68956b] hover:text-white">
                   Créer un compte
