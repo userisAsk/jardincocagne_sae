@@ -32,10 +32,9 @@ parfois l'application web peut mettre du temps a recharger si vous voulez palier
 - attendre et la page apparaitra ou relancer la page
 - relancer docker
 - refait la commande :
-  ```bash
+ ```bash
   docker compose up  -d
 ```
-
 
 ## Documentation
 Documentation swagger pour y accéder soit vous pouvez cliquer sur le ien ci-dessous(local)
@@ -55,6 +54,10 @@ pour lancer le projet la première fois
 - aller a la racine du projet
 ```bash
   npm test
+```
+si vous ne parvenez pas a lancer les tests il faut mettre cette commande  : 
+```bash
+npm install --save-dev identity-obj-proxy
 ```
 
 
