@@ -187,24 +187,29 @@ const Abonnement = () => {
                       <label className={getLabelClass(membership && !donation)}>
                         <input
                           type="radio"
-                          name="membership"
-                          className="hidden"
+                          name="membershipType"
+                          checked={membership && !donation}
                           onChange={() => {
                             setMembership(true);
                             setDonation("");
                           }}
+                          className="hidden"
                         />
                         <div className="p-2">
                           <div className="font-medium">Cotisation simple</div>
                           <div className="text-sm text-gray-500">5 €</div>
                         </div>
                       </label>
-                      <div className={getLabelClass(membership && donation)}>
+                      <label className={getLabelClass(membership && donation !== "")}>
                         <input
                           type="radio"
-                          name="membership"
+                          name="membershipType"
+                          checked={membership && donation !== ""}
+                          onChange={() => {
+                            setMembership(true);
+                            if (!donation) setDonation("0");
+                          }}
                           className="hidden"
-                          onChange={() => setMembership(true)}
                         />
                         <div className="p-2">
                           <div className="font-medium">Cotisation avec don</div>
@@ -213,13 +218,17 @@ const Abonnement = () => {
                             <input
                               type="number"
                               value={donation}
-                              onChange={(e) => setDonation(e.target.value)}
+                              onChange={(e) => {
+                                setDonation(e.target.value);
+                                setMembership(true);
+                              }}
+                              onClick={(e) => e.stopPropagation()}
                               className="border rounded p-1 w-20"
                               placeholder="€"
                             />
                           </div>
                         </div>
-                      </div>
+                      </label>
                     </div>
                   </div>
 

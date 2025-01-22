@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from "../assets/cocagne-vert.png";
 
 function Header() {
   const { isAuthenticated, logout, user } = useAuth();
-  
   const [lastScrollY, setLastScrollY] = useState(0);
   const [hidden, setHidden] = useState(false);
   const location = useLocation();
@@ -30,7 +29,8 @@ function Header() {
     };
   }, [lastScrollY]);
 
-  const handleNavigation = (path) => {
+  const handleSecuredNavigation = (e, path) => {
+    e.preventDefault();
     if (!isAuthenticated && ['/delivery', '/calendrier', '/abonnement'].includes(path)) {
       navigate('/register');
       return;
@@ -42,8 +42,6 @@ function Header() {
     }
     navigate(path);
   };
-
-  
 
   return (
     <header
@@ -62,36 +60,36 @@ function Header() {
         <nav>
           <ul className="flex space-x-5">
             <li>
-              <button 
-                onClick={() => navigate('/')} 
-                className="hover:text-blue-400"
-              >
+              <Link to="/" className="hover:text-blue-400">
                 Accueil
-              </button>
+              </Link>
             </li>
             <li>
-              <button 
-                onClick={() => handleNavigation('/delivery')} 
+              <Link 
+                to="/delivery" 
+                onClick={(e) => handleSecuredNavigation(e, '/delivery')}
                 className="hover:text-blue-400"
               >
                 Créer tournée livraison
-              </button>
+              </Link>
             </li>
             <li>
-              <button 
-                onClick={() => handleNavigation('/calendrier')} 
+              <Link 
+                to="/calendrier"
+                onClick={(e) => handleSecuredNavigation(e, '/calendrier')}
                 className="hover:text-blue-400"
               >
                 Créer un Calendrier
-              </button>
+              </Link>
             </li>
             <li>
-              <button 
-                onClick={() => handleNavigation('/abonnement')} 
+              <Link 
+                to="/abonnement"
+                onClick={(e) => handleSecuredNavigation(e, '/abonnement')}
                 className="hover:text-blue-400"
               >
                 Abonnement
-              </button>
+              </Link>
             </li>
           </ul>
         </nav>
@@ -99,12 +97,12 @@ function Header() {
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              <button
-                onClick={() => navigate('/profile')}
+              <Link
+                to="/profile"
                 className="text-white hover:text-blue-400"
               >
                 Mon compte
-              </button>
+              </Link>
               <button
                 onClick={logout}
                 className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
@@ -114,18 +112,18 @@ function Header() {
             </>
           ) : (
             <>
-              <button 
-                onClick={() => navigate('/login')}
+              <Link 
+                to="/login"
                 className="bg-white text-[#68956b] py-2 px-4 rounded-full transition duration-300 ease-in-out hover:bg-[#68956b] hover:text-white"
               >
                 Connexion
-              </button>
-              <button 
-                onClick={() => navigate('/register')}
+              </Link>
+              <Link 
+                to="/register"
                 className="bg-white text-[#68956b] py-2 px-4 rounded-full transition duration-300 ease-in-out hover:bg-[#68956b] hover:text-white"
               >
                 Créer un compte
-              </button>
+              </Link>
             </>
           )}
         </div>
