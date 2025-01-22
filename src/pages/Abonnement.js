@@ -52,7 +52,35 @@ const Abonnement = () => {
   // Date sélectionnée
   const [selectedDate, setSelectedDate] = useState(null);
 
-  // Récupération des dépôts
+  // Gestionnaires d'événements pour les fréquences et formules
+  const handleFrequencyClick = (category, value) => {
+    switch (category) {
+      case 'vegetables':
+        setVegetableFrequency(vegetableFrequency === value ? "" : value);
+        break;
+      case 'eggs':
+        setEggFrequency(eggFrequency === value ? "" : value);
+        break;
+      case 'fruits':
+        setFruitFrequency(fruitFrequency === value ? "" : value);
+        break;
+    }
+  };
+
+  const handleFormulaClick = (category, value) => {
+    switch (category) {
+      case 'vegetables':
+        setVegetableFormula(vegetableFormula === value ? "" : value);
+        break;
+      case 'eggs':
+        setEggFormula(eggFormula === value ? "" : value);
+        break;
+      case 'fruits':
+        setFruitFormula(fruitFormula === value ? "" : value);
+        break;
+    }
+  };
+
   useEffect(() => {
     if (step === 2) {
       const fetchDepots = async () => {
@@ -98,7 +126,6 @@ const Abonnement = () => {
       `Votre abonnement est confirmé : Dépôt : ${selectedDepotInfo.Nom}, ${selectedDepotInfo.Adresse}`
     );
     setStep(3);
-
   };
 
   const handleDateSubmit = () => {
@@ -202,75 +229,63 @@ const Abonnement = () => {
                       Paniers de légumes
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
-                      <label className={getLabelClass(wantsVegetables)}>
-                        <input
-                          type="radio"
-                          name="vegetables"
-                          className="hidden"
-                          onChange={() => setWantsVegetables(true)}
-                        />
+                      <button
+                        type="button"
+                        onClick={() => setWantsVegetables(true)}
+                        className={getLabelClass(wantsVegetables)}
+                      >
                         <div className="p-2">Oui</div>
-                      </label>
-                      <label className={getLabelClass(!wantsVegetables)}>
-                        <input
-                          type="radio"
-                          name="vegetables"
-                          className="hidden"
-                          onChange={() => {
-                            setWantsVegetables(false);
-                            setVegetableFrequency("");
-                            setVegetableFormula("");
-                          }}
-                        />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setWantsVegetables(false);
+                          setVegetableFrequency("");
+                          setVegetableFormula("");
+                        }}
+                        className={getLabelClass(!wantsVegetables)}
+                      >
                         <div className="p-2">Non</div>
-                      </label>
+                      </button>
                     </div>
                     {wantsVegetables && (
                       <div className="space-y-4 pl-4 border-l-2 border-green-100">
                         <div>
                           <h3 className="font-medium mb-2">Fréquence</h3>
                           <div className="grid grid-cols-2 gap-4">
-                            <label className={getLabelClass(vegetableFrequency === "Hebdomadaire")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Hebdomadaire"
-                                onChange={(e) => setVegetableFrequency(e.target.value)}
-                              />
+                            <button
+                              type="button"
+                              onClick={() => handleFrequencyClick('vegetables', 'Hebdomadaire')}
+                              className={getLabelClass(vegetableFrequency === 'Hebdomadaire')}
+                            >
                               <div className="p-2">Hebdomadaire</div>
-                            </label>
-                            <label className={getLabelClass(vegetableFrequency === "Bimensuelle")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Bimensuelle"
-                                onChange={(e) => setVegetableFrequency(e.target.value)}
-                              />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleFrequencyClick('vegetables', 'Bimensuelle')}
+                              className={getLabelClass(vegetableFrequency === 'Bimensuelle')}
+                            >
                               <div className="p-2">Bimensuelle</div>
-                            </label>
+                            </button>
                           </div>
                         </div>
                         <div>
                           <h3 className="font-medium mb-2">Formule</h3>
                           <div className="grid grid-cols-2 gap-4">
-                            <label className={getLabelClass(vegetableFormula === "Simple")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Simple"
-                                onChange={(e) => setVegetableFormula(e.target.value)}
-                              />
+                            <button
+                              type="button"
+                              onClick={() => handleFormulaClick('vegetables', 'Simple')}
+                              className={getLabelClass(vegetableFormula === 'Simple')}
+                            >
                               <div className="p-2">Simple</div>
-                            </label>
-                            <label className={getLabelClass(vegetableFormula === "Familial")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Familial"
-                                onChange={(e) => setVegetableFormula(e.target.value)}
-                              />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleFormulaClick('vegetables', 'Familial')}
+                              className={getLabelClass(vegetableFormula === 'Familial')}
+                            >
                               <div className="p-2">Familial</div>
-                            </label>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -283,75 +298,63 @@ const Abonnement = () => {
                       Boîtes d'œufs
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
-                      <label className={getLabelClass(wantsEggs)}>
-                        <input
-                          type="radio"
-                          name="eggs"
-                          className="hidden"
-                          onChange={() => setWantsEggs(true)}
-                        />
+                      <button
+                        type="button"
+                        onClick={() => setWantsEggs(true)}
+                        className={getLabelClass(wantsEggs)}
+                      >
                         <div className="p-2">Oui</div>
-                      </label>
-                      <label className={getLabelClass(!wantsEggs)}>
-                        <input
-                          type="radio"
-                          name="eggs"
-                          className="hidden"
-                          onChange={() => {
-                            setWantsEggs(false);
-                            setEggFrequency("");
-                            setEggFormula("");
-                          }}
-                        />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setWantsEggs(false);
+                          setEggFrequency("");
+                          setEggFormula("");
+                        }}
+                        className={getLabelClass(!wantsEggs)}
+                      >
                         <div className="p-2">Non</div>
-                      </label>
+                      </button>
                     </div>
                     {wantsEggs && (
                       <div className="space-y-4 pl-4 border-l-2 border-green-100">
                         <div>
                           <h3 className="font-medium mb-2">Fréquence</h3>
                           <div className="grid grid-cols-2 gap-4">
-                            <label className={getLabelClass(eggFrequency === "Hebdomadaire")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Hebdomadaire"
-                                onChange={(e) => setEggFrequency(e.target.value)}
-                              />
+                            <button
+                              type="button"
+                              onClick={() => handleFrequencyClick('eggs', 'Hebdomadaire')}
+                              className={getLabelClass(eggFrequency === 'Hebdomadaire')}
+                            >
                               <div className="p-2">Hebdomadaire</div>
-                            </label>
-                            <label className={getLabelClass(eggFrequency === "Bimensuelle")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Bimensuelle"
-                                onChange={(e) => setEggFrequency(e.target.value)}
-                              />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleFrequencyClick('eggs', 'Bimensuelle')}
+                              className={getLabelClass(eggFrequency === 'Bimensuelle')}
+                            >
                               <div className="p-2">Bimensuelle</div>
-                            </label>
+                            </button>
                           </div>
                         </div>
                         <div>
                           <h3 className="font-medium mb-2">Formule</h3>
                           <div className="grid grid-cols-2 gap-4">
-                            <label className={getLabelClass(eggFormula === "6 œufs")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="6 œufs"
-                                onChange={(e) => setEggFormula(e.target.value)}
-                              />
+                            <button
+                              type="button"
+                              onClick={() => handleFormulaClick('eggs', '6 œufs')}
+                              className={getLabelClass(eggFormula === '6 œufs')}
+                            >
                               <div className="p-2">6 œufs</div>
-                            </label>
-                            <label className={getLabelClass(eggFormula === "12 œufs")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="12 œufs"
-                                onChange={(e) => setEggFormula(e.target.value)}
-                              />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleFormulaClick('eggs', '12 œufs')}
+                              className={getLabelClass(eggFormula === '12 œufs')}
+                            >
                               <div className="p-2">12 œufs</div>
-                            </label>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -364,74 +367,63 @@ const Abonnement = () => {
                       Paniers de fruits
                     </h2>
                     <div className="grid grid-cols-2 gap-4">
-                      <label className={getLabelClass(wantsFruits)}>
-                        <input
-                          type="radio"
-                          name="fruits"
-                          className="hidden"
-                          onChange={() => setWantsFruits(true)}
-                        />
+                      <button
+                        type="button"
+                        onClick={() => setWantsFruits(true)}
+                        className={getLabelClass(wantsFruits)}
+                      >
                         <div className="p-2">Oui</div>
-                      </label>
-                      <label className={getLabelClass(!wantsFruits)}>
-                        <input
-                          type="radio"
-                          name="fruits"
-                          className="hidden"
-                          onChange={() => { setWantsFruits(false);
-                            setFruitFrequency("");
-                            setFruitFormula("");
-                          }}
-                        />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setWantsFruits(false);
+                          setFruitFrequency("");
+                          setFruitFormula("");
+                        }}
+                        className={getLabelClass(!wantsFruits)}
+                      >
                         <div className="p-2">Non</div>
-                      </label>
+                      </button>
                     </div>
                     {wantsFruits && (
                       <div className="space-y-4 pl-4 border-l-2 border-green-100">
                         <div>
                           <h3 className="font-medium mb-2">Fréquence</h3>
                           <div className="grid grid-cols-2 gap-4">
-                            <label className={getLabelClass(fruitFrequency === "Hebdomadaire")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Hebdomadaire"
-                                onChange={(e) => setFruitFrequency(e.target.value)}
-                              />
+                            <button
+                              type="button"
+                              onClick={() => handleFrequencyClick('fruits', 'Hebdomadaire')}
+                              className={getLabelClass(fruitFrequency === 'Hebdomadaire')}
+                            >
                               <div className="p-2">Hebdomadaire</div>
-                            </label>
-                            <label className={getLabelClass(fruitFrequency === "Bimensuelle")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Bimensuelle"
-                                onChange={(e) => setFruitFrequency(e.target.value)}
-                              />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleFrequencyClick('fruits', 'Bimensuelle')}
+                              className={getLabelClass(fruitFrequency === 'Bimensuelle')}
+                            >
                               <div className="p-2">Bimensuelle</div>
-                            </label>
+                            </button>
                           </div>
                         </div>
                         <div>
                           <h3 className="font-medium mb-2">Formule</h3>
                           <div className="grid grid-cols-2 gap-4">
-                            <label className={getLabelClass(fruitFormula === "Simple")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Simple"
-                                onChange={(e) => setFruitFormula(e.target.value)}
-                              />
+                            <button
+                              type="button"
+                              onClick={() => handleFormulaClick('fruits', 'Simple')}
+                              className={getLabelClass(fruitFormula === 'Simple')}
+                            >
                               <div className="p-2">Simple</div>
-                            </label>
-                            <label className={getLabelClass(fruitFormula === "Familial")}>
-                              <input
-                                type="radio"
-                                className="hidden"
-                                value="Familial"
-                                onChange={(e)  => setFruitFormula(e.target.value)}
-                              />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleFormulaClick('fruits', 'Familial')}
+                              className={getLabelClass(fruitFormula === 'Familial')}
+                            >
                               <div className="p-2">Familial</div>
-                            </label>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -460,23 +452,23 @@ const Abonnement = () => {
                   ) : depots.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {depots.map((depot) => (
-  <label
-    key={depot.ID_Point_Depot}
-    className={getLabelClass(selectedDepot === depot.ID_Point_Depot)} // Changé de depot.Nom à depot.ID_Point_Depot
-  >
-    <input
-      type="radio"
-      name="depot"
-      value={depot.ID_Point_Depot} // Changé de depot.Nom à depot.ID_Point_Depot
-      onChange={() => setSelectedDepot(depot.ID_Point_Depot)} // Changé de depot.Nom à depot.ID_Point_Depot
-      className="hidden"
-    />
-    <div className="p-4">
-      <div className="font-medium text-gray-900">{depot.Nom}</div>
-      <div className="text-sm text-gray-500 mt-1">{depot.Adresse}</div>
-    </div>
-  </label>
-))}
+                        <label
+                          key={depot.ID_Point_Depot}
+                          className={getLabelClass(selectedDepot === depot.ID_Point_Depot)}
+                        >
+                          <input
+                            type="radio"
+                            name="depot"
+                            value={depot.ID_Point_Depot}
+                            onChange={() => setSelectedDepot(depot.ID_Point_Depot)}
+                            className="hidden"
+                          />
+                          <div className="p-4">
+                            <div className="font-medium text-gray-900">{depot.Nom}</div>
+                            <div className="text-sm text-gray-500 mt-1">{depot.Adresse}</div>
+                          </div>
+                        </label>
+                      ))}
                     </div>
                   ) : (
                     <div className="text-center text-gray-500">
