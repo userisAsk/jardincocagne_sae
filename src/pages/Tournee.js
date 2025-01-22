@@ -125,8 +125,8 @@ const FitBounds = ({ points }) => {
 
 const ConfirmDialog = ({ message, onConfirm, onCancel }) => {
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center"  style={{ zIndex: 9999 }}>
-      <div className="bg-white p-6 rounded-lg shadow-lg w-96"  style={{ zIndex: 10000 }}>
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center" style={{ zIndex: 9999 }}>
+      <div className="bg-white p-6 rounded-lg shadow-lg w-96" style={{ zIndex: 10000 }}>
         <p className="text-lg mb-4">{message}</p>
         <div className="flex justify-end gap-4">
           <button onClick={onCancel} className="bg-gray-300 px-4 py-2 rounded-md">Annuler</button>
@@ -137,8 +137,6 @@ const ConfirmDialog = ({ message, onConfirm, onCancel }) => {
   );
 };
 
-
-
 // Composant principal
 const DeliveryManagement = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -146,6 +144,7 @@ const DeliveryManagement = () => {
   const [tours, setTours] = useState([]);
   const [filteredTours, setFilteredTours] = useState([]);
   const [deliveryDate, setDeliveryDate] = useState("");
+  const [selectedTourDay, setSelectedTourDay] = useState("");
   const [selectedTourId, setSelectedTourId] = useState(null);
   const [points, setPoints] = useState([]);
   const [routeInstructions, setRouteInstructions] = useState([]);
@@ -155,7 +154,7 @@ const DeliveryManagement = () => {
   const [mapKey, setMapKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [allDepots, setAllDepots] = useState([]);
-  const [originalDepots, setOriginalDepots] = useState([]); 
+  const [originalDepots, setOriginalDepots] = useState([]);
   const daysOfWeek = ["Mardi", "Mercredi", "Jeudi", "Vendredi"];
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedDepot, setSelectedDepot] = useState("");
@@ -163,7 +162,7 @@ const DeliveryManagement = () => {
 
   const tourColors = {
     "Mardi": "#2563eb",
-    "Mercredi": "#059669",  
+    "Mercredi": "#059669",
     "Vendredi": "#dc2626"
   };
 
@@ -176,10 +175,10 @@ const DeliveryManagement = () => {
           fetch("http://localhost:4000/tours"),
           fetch("http://localhost:4000/depots")
         ]);
-        
+
         const toursData = await toursResponse.json();
         const depotsData = await depotsResponse.json();
-        
+
         setTours(toursData);
         setFilteredTours(toursData);
         setAllDepots(depotsData);
@@ -194,25 +193,21 @@ const DeliveryManagement = () => {
     fetchInitialData();
   }, []);
 
-  // Filter tours based on date
-  // Filtre les dépôts en fonction du jour sélectionné
+  // Filtrer les tournées en fonction du jour sélectionné
   useEffect(() => {
     if (selectedDay) {
-      const filteredDepots = originalDepots.filter(
-        (depot) =>
-          depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(selectedDay)
-      );
-      setAllDepots(filteredDepots);
+      const filtered = tours.filter(tour => tour.Parcours === selectedDay);
+      setFilteredTours(filtered);
     } else {
-      setAllDepots(originalDepots);
+      setFilteredTours(tours);
     }
-  }, [selectedDay, originalDepots, selectedTourId]);
+  }, [selectedDay, tours]);
 
   // Fetch tour details when selected
   useEffect(() => {
     const fetchTourDetails = async () => {
       if (!selectedTourId) return;
-      
+
       setLoading(true);
       try {
         const response = await fetch(`http://localhost:4000/tours/${selectedTourId}`);
@@ -234,12 +229,10 @@ const DeliveryManagement = () => {
   const handleSelectTour = async (tour) => {
     setLoading(true);
     try {
-      // Mettre à jour l'état de la tournée sélectionnée
       setSelectedTourId(tour.ID_Tournee);
       setCurrentColor(tourColors[tour.Parcours] || "#2563eb");
-      setSelectedDay(tour.Parcours);
+      setSelectedTourDay(tour.Parcours); // Ajoutez cette ligne
   
-      // Charger directement les points de la tournée
       const response = await fetch(`http://localhost:4000/tours/${tour.ID_Tournee}`);
       const data = await response.json();
       
@@ -247,37 +240,39 @@ const DeliveryManagement = () => {
         setPoints(data.points);
         setMapKey((prev) => prev + 1);
       }
-  
-      // Filtrer les dépôts en fonction du jour de la tournée
-      const filteredDepots = originalDepots.filter(
-        (depot) => depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(tour.Parcours)
-      );
-      setAllDepots(filteredDepots);
-  
     } catch (error) {
       console.error("Erreur lors du chargement de la tournée:", error);
       alert("Erreur lors du chargement de la tournée");
     } finally {
       setLoading(false);
-      setSelectedDepot(""); // Réinitialiser le dépôt sélectionné
+      setSelectedDepot("");
     }
   };
-  
+
+  // Filtre des dépôts en fonction du jour sélectionné
   useEffect(() => {
-    if (selectedDay) {
+    // Utilisez d'abord le jour du filtre, sinon utilisez le jour de la tournée sélectionnée
+    const activeDay = selectedDay || selectedTourDay;
+    
+    if (activeDay) {
       const filteredDepots = originalDepots.filter(
-        (depot) =>
-          depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(selectedDay)
+        (depot) => depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(activeDay)
       );
       setAllDepots(filteredDepots);
     } else {
       setAllDepots(originalDepots);
     }
-  }, [selectedDay, originalDepots]);
+  }, [selectedDay, selectedTourDay, originalDepots]);
   
-  
-  
-
+  // Modifiez handleDayChange pour réinitialiser aussi selectedTourDay :
+  const handleDayChange = (e) => {
+    const newDay = e.target.value;
+    setSelectedDay(newDay);
+    setSelectedTourId(null);
+    setSelectedTourDay(""); 
+    setPoints([]);
+    setMapKey((prev) => prev + 1);
+  };
 
   const handleAddDepot = async () => {
     if (!selectedDepot || !selectedTourId) {
@@ -327,7 +322,7 @@ const DeliveryManagement = () => {
         alert("Erreur lors de la suppression du point");
       } finally {
         setLoading(false);
-        setShowConfirmDialog(false); 
+        setShowConfirmDialog(false);
         setConfirmCallback(null);
       }
     });
@@ -362,14 +357,14 @@ const DeliveryManagement = () => {
         <div className="flex flex-col md:flex-row gap-4">
           {/* Sidebar */}
           <div className="w-full md:w-1/4 space-y-4">
-          <div className="bg-white rounded-lg shadow p-4">
+            <div className="bg-white rounded-lg shadow p-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Jour de livraison
               </label>
               <select
                 className="w-full p-2 border rounded-md"
                 value={selectedDay}
-                onChange={(e) => setSelectedDay(e.target.value)}
+                onChange={handleDayChange}
               >
                 <option value="">Tous les jours</option>
                 {daysOfWeek.map((day) => (
@@ -397,7 +392,7 @@ const DeliveryManagement = () => {
                         <option 
                           key={depot.ID_Point_Depot} 
                           value={depot.ID_Point_Depot}
-                          className="whitespace-normal" // Permet le retour à la ligne si nécessaire
+                          className="whitespace-normal"
                         >
                           {depot.Nom} - {depot.Adresse}
                         </option>
@@ -558,9 +553,7 @@ const DeliveryManagement = () => {
                                 className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg"
                               >
                                 <div className="flex-shrink-0">
-                                  <Icon 
-                                    className="w-5 h-5 text-blue-500" 
-                                  />
+                                  <Icon className="w-5 h-5 text-blue-500" />
                                 </div>
                                 <div className="flex-grow">
                                   <span className="text-gray-800">{instruction.text}</span>
@@ -590,16 +583,16 @@ const DeliveryManagement = () => {
                 </div>
               </div>
             )}
-             {showConfirmDialog && (
-    <ConfirmDialog
-      message="Êtes-vous sûr de vouloir supprimer ce point ?"
-      onConfirm={confirmCallback}
-      onCancel={handleCancelConfirm}
-    />
-  )}
           </div>
         </div>
       </div>
+      {showConfirmDialog && (
+        <ConfirmDialog
+          message="Êtes-vous sûr de vouloir supprimer ce point ?"
+          onConfirm={confirmCallback}
+          onCancel={handleCancelConfirm}
+        />
+      )}
     </div>
   );
 };
