@@ -231,32 +231,51 @@ const DeliveryManagement = () => {
     fetchTourDetails();
   }, [selectedTourId]);
 
-  const handleSelectTour = (tour) => {
-    setSelectedTourId(tour.ID_Tournee);
-    setCurrentColor(tourColors[tour.Parcours] || "#2563eb");
-    setRouteInstructions([]);
-    setTotalTime(0);
-    setTotalDistance(0);
-    setPoints([]); 
-    setSelectedDepot(""); 
-    setSelectedDay(tour.Parcours); 
-    
-    // Filtrer les dépôts en fonction du jour de la tournée
-    const filteredDepots = originalDepots.filter(
-      (depot) => depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(tour.Parcours)
-    );
-    setAllDepots(filteredDepots);
+  const handleSelectTour = async (tour) => {
+    setLoading(true);
+    try {
+      // Mettre à jour l'état de la tournée sélectionnée
+      setSelectedTourId(tour.ID_Tournee);
+      setCurrentColor(tourColors[tour.Parcours] || "#2563eb");
+      setSelectedDay(tour.Parcours);
+  
+      // Charger directement les points de la tournée
+      const response = await fetch(`http://localhost:4000/tours/${tour.ID_Tournee}`);
+      const data = await response.json();
+      
+      if (data.points) {
+        setPoints(data.points);
+        setMapKey((prev) => prev + 1);
+      }
+  
+      // Filtrer les dépôts en fonction du jour de la tournée
+      const filteredDepots = originalDepots.filter(
+        (depot) => depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(tour.Parcours)
+      );
+      setAllDepots(filteredDepots);
+  
+    } catch (error) {
+      console.error("Erreur lors du chargement de la tournée:", error);
+      alert("Erreur lors du chargement de la tournée");
+    } finally {
+      setLoading(false);
+      setSelectedDepot(""); // Réinitialiser le dépôt sélectionné
+    }
   };
   
   useEffect(() => {
-    if (selectedDay && selectedTourId) {
-      setSelectedTourId(null); // Désélectionner la tournée
-      setPoints([]); // Réinitialiser les points
-      setRouteInstructions([]); // Réinitialiser les instructions
-      setTotalTime(0);
-      setTotalDistance(0);
+    if (selectedDay) {
+      const filteredDepots = originalDepots.filter(
+        (depot) =>
+          depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(selectedDay)
+      );
+      setAllDepots(filteredDepots);
+    } else {
+      setAllDepots(originalDepots);
     }
-  }, [selectedDay]);
+  }, [selectedDay, originalDepots]);
+  
+  
   
 
 
