@@ -155,6 +155,8 @@ const DeliveryManagement = () => {
   const [mapKey, setMapKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [allDepots, setAllDepots] = useState([]);
+  const daysOfWeek = ["Mardi", "Mercredi", "Jeudi", "Vendredi"];
+  const [selectedDay, setSelectedDay] = useState("");
   const [selectedDepot, setSelectedDepot] = useState("");
   const [showInstructions, setShowInstructions] = useState(true);
 
@@ -192,12 +194,12 @@ const DeliveryManagement = () => {
 
   // Filter tours based on date
   useEffect(() => {
-    if (deliveryDate) {
-      setFilteredTours(tours.filter((tour) => tour.Jour_Livraison.startsWith(deliveryDate)));
+    if (selectedDay) {
+      setFilteredTours(tours.filter((tour) => tour.Parcours === selectedDay));
     } else {
       setFilteredTours(tours);
     }
-  }, [deliveryDate, tours]);
+  }, [selectedDay, tours]);
 
   // Fetch tour details when selected
   useEffect(() => {
@@ -316,17 +318,20 @@ const DeliveryManagement = () => {
         <div className="flex flex-col md:flex-row gap-4">
           {/* Sidebar */}
           <div className="w-full md:w-1/4 space-y-4">
-            {/* Date Filter */}
-            <div className="bg-white rounded-lg shadow p-4">
+          <div className="bg-white rounded-lg shadow p-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date de livraison
+                Jour de livraison
               </label>
-              <input
-                type="date"
+              <select
                 className="w-full p-2 border rounded-md"
-                value={deliveryDate}
-                onChange={(e) => setDeliveryDate(e.target.value)}
-              />
+                value={selectedDay}
+                onChange={(e) => setSelectedDay(e.target.value)}
+              >
+                <option value="">Tous les jours</option>
+                {daysOfWeek.map((day) => (
+                  <option key={day} value={day}>{day}</option>
+                ))}
+              </select>
             </div>
 
             {/* Point Management */}

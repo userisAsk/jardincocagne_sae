@@ -9,7 +9,7 @@ import Header from './components/Header';
 import Home from './pages/Home';
 import Login from './connexion_pages/Login';
 import Register from './connexion_pages/Register';
-import DeliveryManagement from './DeliveryManagement';
+import DeliveryManagement from './pages/Tournee';
 import Footer from './components/Footer';
 import Abonnement from './pages/Abonnement';
 import Profile from './pages/Profile';

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import DeliveryManagement from '../src/DeliveryManagement';
+import DeliveryManagement from '../src/pages/Tournee';
 
 // Mock fetch for API calls
 global.fetch = jest.fn(() =>
