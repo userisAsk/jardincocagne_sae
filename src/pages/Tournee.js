@@ -155,6 +155,7 @@ const DeliveryManagement = () => {
   const [mapKey, setMapKey] = useState(0);
   const [loading, setLoading] = useState(false);
   const [allDepots, setAllDepots] = useState([]);
+  const [originalDepots, setOriginalDepots] = useState([]); 
   const daysOfWeek = ["Mardi", "Mercredi", "Jeudi", "Vendredi"];
   const [selectedDay, setSelectedDay] = useState("");
   const [selectedDepot, setSelectedDepot] = useState("");
@@ -162,7 +163,7 @@ const DeliveryManagement = () => {
 
   const tourColors = {
     "Mardi": "#2563eb",
-    "Mercredi": "#059669",
+    "Mercredi": "#059669",  
     "Vendredi": "#dc2626"
   };
 
@@ -182,6 +183,7 @@ const DeliveryManagement = () => {
         setTours(toursData);
         setFilteredTours(toursData);
         setAllDepots(depotsData);
+        setOriginalDepots(depotsData);
       } catch (error) {
         console.error("Erreur lors de la récupération des données:", error);
         alert("Erreur lors du chargement des données");
@@ -193,13 +195,18 @@ const DeliveryManagement = () => {
   }, []);
 
   // Filter tours based on date
+  // Filtre les dépôts en fonction du jour sélectionné
   useEffect(() => {
     if (selectedDay) {
-      setFilteredTours(tours.filter((tour) => tour.Parcours === selectedDay));
+      const filteredDepots = originalDepots.filter(
+        (depot) =>
+          depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(selectedDay)
+      );
+      setAllDepots(filteredDepots);
     } else {
-      setFilteredTours(tours);
+      setAllDepots(originalDepots);
     }
-  }, [selectedDay, tours]);
+  }, [selectedDay, originalDepots, selectedTourId]);
 
   // Fetch tour details when selected
   useEffect(() => {
@@ -230,9 +237,27 @@ const DeliveryManagement = () => {
     setRouteInstructions([]);
     setTotalTime(0);
     setTotalDistance(0);
-    setSelectedDepot("");
+    setPoints([]); 
+    setSelectedDepot(""); 
+    setSelectedDay(tour.Parcours); 
+    
+    // Filtrer les dépôts en fonction du jour de la tournée
+    const filteredDepots = originalDepots.filter(
+      (depot) => depot.Jour_Disponibilite && depot.Jour_Disponibilite.includes(tour.Parcours)
+    );
+    setAllDepots(filteredDepots);
   };
-
+  
+  useEffect(() => {
+    if (selectedDay && selectedTourId) {
+      setSelectedTourId(null); // Désélectionner la tournée
+      setPoints([]); // Réinitialiser les points
+      setRouteInstructions([]); // Réinitialiser les instructions
+      setTotalTime(0);
+      setTotalDistance(0);
+    }
+  }, [selectedDay]);
+  
 
 
   const handleAddDepot = async () => {
@@ -350,8 +375,12 @@ const DeliveryManagement = () => {
                     >
                       <option value="">Choisir un dépôt</option>
                       {allDepots.map((depot) => (
-                        <option key={depot.ID_Point_Depot} value={depot.ID_Point_Depot}>
-                          {depot.Nom}
+                        <option 
+                          key={depot.ID_Point_Depot} 
+                          value={depot.ID_Point_Depot}
+                          className="whitespace-normal" // Permet le retour à la ligne si nécessaire
+                        >
+                          {depot.Nom} - {depot.Adresse}
                         </option>
                       ))}
                     </select>
