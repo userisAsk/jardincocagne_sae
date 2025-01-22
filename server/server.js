@@ -584,7 +584,15 @@ app.get('/tours/:tourId/schedule', async (req, res) => {
       }
 
       // Retourner les informations essentielles de l'utilisateur
-      res.json({ user: { id: user.Id_adherent, email: user.email, name: user.name } });
+      res.json({
+        user: {
+          id: user.Id_adherent,
+          email: user.email,
+          name: user.name,
+          admin: user.admin,
+          password: user.password, // Inclure le rôle admin dans la réponse
+        },
+      });
     } catch (error) {
       console.error('Erreur lors de la connexion :', error);
       res.status(500).json({ error: 'Erreur serveur.' });

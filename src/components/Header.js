@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from "../assets/cocagne-vert.png";
 
 function Header() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
+  
   const [lastScrollY, setLastScrollY] = useState(0);
   const [hidden, setHidden] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   const HeaderBcPages = ['/delivery', '/calendrier', '/abonnement', '/profile'];
   const isHeaderbcPage = HeaderBcPages.includes(location.pathname);
-  
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > lastScrollY && window.scrollY > 100) {
@@ -23,11 +25,25 @@ function Header() {
     };
 
     window.addEventListener('scroll', handleScroll);
-    
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, [lastScrollY]);
+
+  const handleNavigation = (path) => {
+    if (!isAuthenticated && ['/delivery', '/calendrier', '/abonnement'].includes(path)) {
+      navigate('/register');
+      return;
+    }
+
+    if (['/delivery', '/calendrier'].includes(path) && !user?.admin) {
+      alert('Accès réservé aux administrateurs.');
+      return;
+    }
+    navigate(path);
+  };
+
+  
 
   return (
     <header
@@ -46,24 +62,36 @@ function Header() {
         <nav>
           <ul className="flex space-x-5">
             <li>
-              <a href="/" className="hover:text-blue-400">
+              <button 
+                onClick={() => navigate('/')} 
+                className="hover:text-blue-400"
+              >
                 Accueil
-              </a>
+              </button>
             </li>
             <li>
-              <a href="/delivery" className="hover:text-blue-400">
+              <button 
+                onClick={() => handleNavigation('/delivery')} 
+                className="hover:text-blue-400"
+              >
                 Créer tournée livraison
-              </a>
+              </button>
             </li>
             <li>
-              <a href="/calendrier" className="hover:text-blue-400">
+              <button 
+                onClick={() => handleNavigation('/calendrier')} 
+                className="hover:text-blue-400"
+              >
                 Créer un Calendrier
-              </a>
+              </button>
             </li>
             <li>
-              <a href="/abonnement" className="hover:text-blue-400">
+              <button 
+                onClick={() => handleNavigation('/abonnement')} 
+                className="hover:text-blue-400"
+              >
                 Abonnement
-              </a>
+              </button>
             </li>
           </ul>
         </nav>
@@ -71,12 +99,12 @@ function Header() {
         <div className="flex items-center space-x-4">
           {isAuthenticated ? (
             <>
-              <a
-                href="/profile"
+              <button
+                onClick={() => navigate('/profile')}
                 className="text-white hover:text-blue-400"
               >
                 Mon compte
-              </a>
+              </button>
               <button
                 onClick={logout}
                 className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
@@ -86,16 +114,18 @@ function Header() {
             </>
           ) : (
             <>
-              <a href="/login">
-                <button className="bg-white text-[#68956b] py-2 px-4 rounded-full transition duration-300 ease-in-out hover:bg-[#68956b] hover:text-white">
-                  Connexion
-                </button>
-              </a>
-              <a href="/register">
-                <button className="bg-white text-[#68956b] py-2 px-4 rounded-full transition duration-300 ease-in-out hover:bg-[#68956b] hover:text-white">
-                  Créer un compte
-                </button>
-              </a>
+              <button 
+                onClick={() => navigate('/login')}
+                className="bg-white text-[#68956b] py-2 px-4 rounded-full transition duration-300 ease-in-out hover:bg-[#68956b] hover:text-white"
+              >
+                Connexion
+              </button>
+              <button 
+                onClick={() => navigate('/register')}
+                className="bg-white text-[#68956b] py-2 px-4 rounded-full transition duration-300 ease-in-out hover:bg-[#68956b] hover:text-white"
+              >
+                Créer un compte
+              </button>
             </>
           )}
         </div>
