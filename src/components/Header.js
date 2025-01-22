@@ -9,7 +9,7 @@ function Header() {
   const location = useLocation();
 
   // Détecter si on est sur la page "DeliveryManagement"
-  const HeaderBcPages = ['/delivery', '/calendrier', '/abonnement'];
+  const HeaderBcPages = ['/delivery', '/calendrier', '/abonnement', 'profile'];
   const isHeaderbcPage = HeaderBcPages.includes(location.pathname);
 
 
